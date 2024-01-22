@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from src.menu.models.submenu_model import SubmenuModel, SubmenuDetailModel
-from src.menu.repositorys.submenu_repository import SubmenuRepository
+from src.menu.repositories.submenu_repository import SubmenuRepository
 from src.menu.schemas.submenu_schema import SubmenuCreate, SubmenuUpdate
 
 

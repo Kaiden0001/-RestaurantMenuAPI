@@ -18,7 +18,7 @@ from src.menu.models.submenu_model import (
     SubmenuModel,
     SubmenuDetailModel
 )
-from src.menu.repositorys.base_repository import BaseRepository
+from src.menu.repositories.base_repository import BaseRepository
 from src.menu.schemas.submenu_schema import SubmenuCreate, SubmenuUpdate
 
 

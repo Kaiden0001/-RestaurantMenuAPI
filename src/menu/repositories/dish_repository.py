@@ -13,7 +13,7 @@ from sqlalchemy import (
 )
 
 from src.menu.models.dish_model import Dish, DishModel
-from src.menu.repositorys.base_repository import BaseRepository
+from src.menu.repositories.base_repository import BaseRepository
 from src.menu.schemas.dish_schema import DishUpdate, DishCreate
 
 

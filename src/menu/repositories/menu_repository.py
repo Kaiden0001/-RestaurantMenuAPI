@@ -15,7 +15,7 @@ from sqlalchemy import (
 from src.menu.models.dish_model import Dish
 from src.menu.models.menu_model import MenuModel, Menu, MenuDetailModel
 from src.menu.models.submenu_model import Submenu
-from src.menu.repositorys.base_repository import BaseRepository
+from src.menu.repositories.base_repository import BaseRepository
 from src.menu.schemas.menu_schema import MenuCreate, MenuUpdate
 
 

@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from src.menu.models.menu_model import MenuModel, MenuDetailModel
-from src.menu.repositorys.menu_repository import MenuRepository
+from src.menu.repositories.menu_repository import MenuRepository
 from src.menu.schemas.menu_schema import MenuCreate, MenuUpdate
 
 

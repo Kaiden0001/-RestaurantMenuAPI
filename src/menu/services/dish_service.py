@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from src.menu.models.dish_model import DishModel
-from src.menu.repositorys.dish_repository import DishRepository
+from src.menu.repositories.dish_repository import DishRepository
 from src.menu.schemas.dish_schema import DishUpdate, DishCreate
 
 

@@ -2,9 +2,9 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database import get_async_session
-from src.menu.repositorys.dish_repository import DishRepository
-from src.menu.repositorys.menu_repository import MenuRepository
-from src.menu.repositorys.submenu_repository import SubmenuRepository
+from src.menu.repositories.dish_repository import DishRepository
+from src.menu.repositories.menu_repository import MenuRepository
+from src.menu.repositories.submenu_repository import SubmenuRepository
 from src.menu.services.dish_service import DishService
 from src.menu.services.menu_service import MenuService
 from src.menu.services.submenu_service import SubmenuService
