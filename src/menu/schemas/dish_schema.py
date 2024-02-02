@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from pydantic import BaseModel
 
 
@@ -12,7 +10,7 @@ class DishBase(BaseModel):
 
 class DishCreate(DishBase):
     """Модель данных для создания нового блюда."""
-    id: UUID | None = None
+    pass
 
 
 class DishUpdate(DishBase):

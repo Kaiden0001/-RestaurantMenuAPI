@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from pydantic import BaseModel
 
 
@@ -11,7 +9,7 @@ class MenuBase(BaseModel):
 
 class MenuCreate(MenuBase):
     """Модель данных для создания нового меню."""
-    id: UUID | None = None
+    pass
 
 
 class MenuUpdate(MenuBase):
