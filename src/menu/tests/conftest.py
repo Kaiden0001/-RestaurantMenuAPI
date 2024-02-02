@@ -1,7 +1,7 @@
 import asyncio
 import os
 from asyncio import AbstractEventLoop
-from typing import AsyncGenerator, Any, Generator
+from typing import Any, AsyncGenerator, Generator
 
 import pytest
 from httpx import AsyncClient
@@ -91,7 +91,7 @@ def dish_update_data() -> dict:
 
 
 @pytest.fixture
-async def menu_id() -> str:
+async def menu_id() -> str | None:
     """
     Фикстура предоставляет идентификатор меню, полученный из переменной
     окружения 'menu_id'.
@@ -102,7 +102,7 @@ async def menu_id() -> str:
 
 
 @pytest.fixture
-async def submenu_id() -> str:
+async def submenu_id() -> str | None:
     """
     Фикстура предоставляет идентификатор подменю, полученный из переменной
     окружения 'submenu_id'.
@@ -113,7 +113,7 @@ async def submenu_id() -> str:
 
 
 @pytest.fixture
-async def dish_id() -> str:
+async def dish_id() -> str | None:
     """
     Фикстура предоставляет идентификатор блюда, полученный из переменной
     окружения 'dish_id'.

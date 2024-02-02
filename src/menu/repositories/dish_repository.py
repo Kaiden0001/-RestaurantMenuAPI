@@ -2,24 +2,16 @@ from typing import Any
 from uuid import UUID
 
 from fastapi import HTTPException
-from sqlalchemy import (
-    Select,
-    select,
-    Update,
-    update,
-    Delete,
-    delete,
-    Result
-)
+from sqlalchemy import Delete, Result, Select, Update, delete, select, update
 
 from src.menu.models.dish_model import Dish, DishModel
 from src.menu.repositories.base_repository import BaseRepository
-from src.menu.schemas.dish_schema import DishUpdate, DishCreate
+from src.menu.schemas.dish_schema import DishCreate, DishUpdate
 
 
 class DishRepository(BaseRepository):
 
-    async def get_dish(self, dish_id: UUID) -> DishModel | None:
+    async def get_dish(self, dish_id: UUID) -> DishModel:
         """
         Получение информации о блюде по его уникальному идентификатору.
 
@@ -29,7 +21,7 @@ class DishRepository(BaseRepository):
         """
         db_dish: Any = await self.get_dish_by_id(dish_id)
         if not db_dish:
-            raise HTTPException(status_code=404, detail="dish not found")
+            raise HTTPException(status_code=404, detail='dish not found')
 
         return db_dish
 
@@ -43,10 +35,9 @@ class DishRepository(BaseRepository):
         query: Select = select(Dish).where(Dish.submenu_id == submenu_id)
         result: Result = await self.session.execute(query)
 
-        return result.scalars().all()
+        return list(result.scalars().all())
 
-    async def update_dish(self, dish_id: UUID,
-                          dish_update: DishUpdate) -> DishModel | None:
+    async def update_dish(self, dish_id: UUID, dish_update: DishUpdate) -> DishModel:
         """
         Обновление информации о блюде.
 
@@ -57,18 +48,16 @@ class DishRepository(BaseRepository):
        """
         existing_dish: Any = await self.get_dish_by_id(dish_id)
         if not existing_dish:
-            raise HTTPException(status_code=404, detail="dish not found")
+            raise HTTPException(status_code=404, detail='dish not found')
         del existing_dish
 
-        query: Update = update(Dish).where(Dish.id == dish_id).values(
-            **dish_update.model_dump())
+        query: Update = update(Dish).where(Dish.id == dish_id).values(**dish_update.model_dump())
         await self.session.execute(query)
         await self.session.commit()
 
         return await self.get_dish_by_id(dish_id)
 
-    async def create_dish(self, submenu_id: UUID,
-                          dish_create: DishCreate) -> DishModel | None:
+    async def create_dish(self, submenu_id: UUID, dish_create: DishCreate) -> DishModel:
         """
         Создание нового блюда в указанном подменю.
 
@@ -83,7 +72,7 @@ class DishRepository(BaseRepository):
 
         return db_dish
 
-    async def delete_dish(self, dish_id: UUID) -> DishModel | None:
+    async def delete_dish(self, dish_id: UUID) -> DishModel:
         """
         Удаление блюда по его уникальному идентификатору.
 
@@ -94,7 +83,7 @@ class DishRepository(BaseRepository):
         db_dish: DishModel | None = await self.get_dish_by_id(dish_id)
 
         if not db_dish:
-            raise HTTPException(status_code=404, detail="Dish not found")
+            raise HTTPException(status_code=404, detail='dish not found')
 
         query: Delete = delete(Dish).where(Dish.id == dish_id)
         await self.session.execute(query)

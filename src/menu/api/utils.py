@@ -10,8 +10,7 @@ from src.menu.services.menu_service import MenuService
 from src.menu.services.submenu_service import SubmenuService
 
 
-async def get_menu_service(
-        session: AsyncSession = Depends(get_async_session)) -> MenuService:
+async def get_menu_service(session: AsyncSession = Depends(get_async_session)) -> MenuService:
     """
     Получение сервиса для работы с меню.
 
@@ -22,8 +21,7 @@ async def get_menu_service(
     return MenuService(menu_repository)
 
 
-async def get_submenu_service(
-        session: AsyncSession = Depends(get_async_session)) -> SubmenuService:
+async def get_submenu_service(session: AsyncSession = Depends(get_async_session)) -> SubmenuService:
     """
     Получение сервиса для работы с подменю.
 
@@ -34,8 +32,7 @@ async def get_submenu_service(
     return SubmenuService(submenu_repository)
 
 
-async def get_dish_service(
-        session: AsyncSession = Depends(get_async_session)) -> DishService:
+async def get_dish_service(session: AsyncSession = Depends(get_async_session)) -> DishService:
     """
     Получение сервиса для работы с блюдами.
 

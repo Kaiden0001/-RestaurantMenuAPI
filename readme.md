@@ -6,7 +6,7 @@ sudo docker compose up --build
 ```
 
 ## Запуск pytest
-```bash 
+```bash
 sudo docker compose -f docker-compose-test.yml up --build -d
 ```
 ```bash

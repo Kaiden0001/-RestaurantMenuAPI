@@ -1,29 +1,17 @@
-from typing import Sequence, Any
+from typing import Any
 from uuid import UUID
 
 from fastapi import HTTPException
-from sqlalchemy import (
-    Select,
-    select,
-    Result,
-    func,
-    Update,
-    update,
-    Delete,
-    delete
-)
+from sqlalchemy import Delete, Result, Select, Update, delete, func, select, update
+
 from src.menu.models.dish_model import Dish
-from src.menu.models.submenu_model import (
-    Submenu,
-    SubmenuModel,
-    SubmenuDetailModel
-)
+from src.menu.models.submenu_model import Submenu, SubmenuDetailModel, SubmenuModel
 from src.menu.repositories.base_repository import BaseRepository
 from src.menu.schemas.submenu_schema import SubmenuCreate, SubmenuUpdate
 
 
 class SubmenuRepository(BaseRepository):
-    async def get_submenus(self, menu_id: UUID) -> list[SubmenuModel] | None:
+    async def get_submenus(self, menu_id: UUID) -> list[SubmenuModel]:
         """
         Получение списка подменю для конкретного меню.
 
@@ -34,11 +22,10 @@ class SubmenuRepository(BaseRepository):
         """
         query: Select = select(Submenu).where(Submenu.menu_id == menu_id)
         result: Result = await self.session.execute(query)
-        result_all: Sequence[SubmenuModel] | None = result.scalars().all()
+        result_all: list[SubmenuModel] = result.scalars().all()
         return result_all
 
-    async def create_submenu(self, menu_id: UUID,
-                             submenu_create: SubmenuCreate) -> SubmenuModel | None:
+    async def create_submenu(self, menu_id: UUID, submenu_create: SubmenuCreate) -> SubmenuModel:
         """
         Создание нового подменю.
 
@@ -47,16 +34,14 @@ class SubmenuRepository(BaseRepository):
         :param submenu_create: Схема данных для создания нового подменю.
         :return: Модель данных созданного подменю.
         """
-        db_submenu: Submenu = Submenu(menu_id=menu_id,
-                                      **submenu_create.model_dump())
+        db_submenu: Submenu = Submenu(menu_id=menu_id, **submenu_create.model_dump())
         self.session.add(db_submenu)
         await self.session.commit()
         await self.session.refresh(db_submenu)
 
         return db_submenu
 
-    async def get_submenu_detail(self, menu_id: UUID,
-                                 submenu_id: UUID) -> SubmenuDetailModel | None:
+    async def get_submenu_detail(self, menu_id: UUID, submenu_id: UUID) -> SubmenuDetailModel:
         """
         Получение подробной информации о конкретном подменю.
 
@@ -88,14 +73,12 @@ class SubmenuRepository(BaseRepository):
             title=submenu.title,
             menu_id=menu_id,
             description=submenu.description,
-            dishes_count=int(
-                submenu.dish_count) if submenu.dish_count is not None else 0
+            dishes_count=int(submenu.dish_count) if submenu.dish_count is not None else 0
         )
 
         return submenu_detail
 
-    async def update_submenu(self, menu_id: UUID, submenu_id: UUID,
-                             submenu_update: SubmenuUpdate) -> SubmenuModel | None:
+    async def update_submenu(self, menu_id: UUID, submenu_id: UUID, submenu_update: SubmenuUpdate) -> SubmenuModel:
         """
         Обновление информации о подменю.
 
@@ -107,18 +90,16 @@ class SubmenuRepository(BaseRepository):
         """
         existing_submenu: Any = await self.get_submenu_by_id(submenu_id)
         if not existing_submenu:
-            raise HTTPException(status_code=404, detail="submenu not found")
+            raise HTTPException(status_code=404, detail='submenu not found')
 
         query: Update = update(Submenu).where(Submenu.menu_id == menu_id,
-                                              Submenu.id == submenu_id).values(
-            **submenu_update.model_dump())
+                                              Submenu.id == submenu_id).values(**submenu_update.model_dump())
         await self.session.execute(query)
         await self.session.commit()
 
         return await self.get_submenu_by_id(submenu_id)
 
-    async def delete_submenu(self, menu_id: UUID,
-                             submenu_id: UUID) -> SubmenuModel | None:
+    async def delete_submenu(self, menu_id: UUID, submenu_id: UUID) -> SubmenuModel:
         """
         Удаление подменю.
 
@@ -127,14 +108,12 @@ class SubmenuRepository(BaseRepository):
         :return: Модель данных удаленного подменю.
         :raise HTTPException: Исключение с кодом 404, если подменю не найдено.
         """
-        existing_submenu: SubmenuModel = await self.get_submenu_by_id(
-            submenu_id)
+        existing_submenu: SubmenuModel = await self.get_submenu_by_id(submenu_id)
 
         if not existing_submenu:
             raise HTTPException(status_code=404, detail='submenu not found')
 
-        query: Delete = delete(Submenu).where(Submenu.menu_id == menu_id,
-                                              Submenu.id == submenu_id)
+        query: Delete = delete(Submenu).where(Submenu.menu_id == menu_id, Submenu.id == submenu_id)
         await self.session.execute(query)
         await self.session.commit()
 

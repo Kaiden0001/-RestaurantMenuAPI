@@ -8,9 +8,9 @@ from alembic import context
 from src.config import DB_HOST, DB_NAME, DB_PASS, DB_PORT, DB_USER
 from src.database import Base
 
-from src.menu.models.dish_model import Dish
-from src.menu.models.menu_model import Menu
-from src.menu.models.submenu_model import Submenu
+# from src.menu.models.dish_model import Dish
+# from src.menu.models.menu_model import Menu
+# from src.menu.models.submenu_model import Submenu
 
 sys.path.append(os.path.join(sys.path[0], 'src'))
 

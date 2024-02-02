@@ -9,9 +9,7 @@ from src.menu.models.dish_model import Dish
 
 
 class Submenu(Base):
-    """
-    Модель базы данных для подменю.
-    """
+    """Модель базы данных для подменю."""
     __tablename__ = 'submenu'
 
     id: UUID4 = Column(UUID, primary_key=True, default=uuid.uuid4)
@@ -27,9 +25,7 @@ class Submenu(Base):
 
 
 class SubmenuModel(BaseModel):
-    """
-    Модель данных (Pydantic) для подменю.
-    """
+    """Модель данных (Pydantic) для подменю."""
     id: UUID4
     title: str
     description: str
@@ -37,7 +33,5 @@ class SubmenuModel(BaseModel):
 
 
 class SubmenuDetailModel(SubmenuModel):
-    """
-    Модель данных (Pydantic) для подменю с доп. полям.
-    """
+    """Модель данных (Pydantic) для подменю с доп. полям."""
     dishes_count: int

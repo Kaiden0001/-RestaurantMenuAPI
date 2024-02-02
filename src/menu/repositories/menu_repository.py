@@ -2,18 +2,10 @@ from typing import Any
 from uuid import UUID
 
 from fastapi import HTTPException
-from sqlalchemy import (
-    Select,
-    select,
-    func,
-    Result,
-    Update,
-    update,
-    Delete,
-    delete
-)
+from sqlalchemy import Delete, Result, Select, Update, delete, func, select, update
+
 from src.menu.models.dish_model import Dish
-from src.menu.models.menu_model import MenuModel, Menu, MenuDetailModel
+from src.menu.models.menu_model import Menu, MenuDetailModel, MenuModel
 from src.menu.models.submenu_model import Submenu
 from src.menu.repositories.base_repository import BaseRepository
 from src.menu.schemas.menu_schema import MenuCreate, MenuUpdate
@@ -31,7 +23,7 @@ class MenuRepository(BaseRepository):
         result_all: list[MenuModel] = result.scalars().all()
         return result_all
 
-    async def get_menu_detail(self, menu_id: UUID) -> MenuDetailModel | None:
+    async def get_menu_detail(self, menu_id: UUID) -> MenuDetailModel:
         """
         Получение подробной информации о конкретном меню.
 
@@ -82,7 +74,7 @@ class MenuRepository(BaseRepository):
 
         return db_menu
 
-    async def update_menu(self, menu_id: UUID, menu_update: MenuUpdate) -> MenuModel | None:
+    async def update_menu(self, menu_id: UUID, menu_update: MenuUpdate) -> MenuModel:
         """
         Обновление информации о меню.
 
@@ -93,7 +85,7 @@ class MenuRepository(BaseRepository):
         """
         existing_menu: Any = await self.get_menu_by_id(menu_id)
         if not existing_menu:
-            raise HTTPException(status_code=404, detail="Menu not found")
+            raise HTTPException(status_code=404, detail='Menu not found')
 
         query: Update = update(Menu).where(Menu.id == menu_id).values(**menu_update.model_dump())
         await self.session.execute(query)
@@ -101,7 +93,7 @@ class MenuRepository(BaseRepository):
 
         return await self.get_menu_by_id(menu_id)
 
-    async def delete_menu(self, menu_id: UUID) -> MenuModel | None:
+    async def delete_menu(self, menu_id: UUID) -> MenuModel:
         """
         Удаление меню.
 

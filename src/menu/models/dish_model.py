@@ -9,9 +9,7 @@ from src.database import Base
 
 
 class Dish(Base):
-    """
-    Модель базы данных для блюда.
-    """
+    """Модель базы данных для блюда."""
     __tablename__ = 'dish'
 
     id: UUID4 = Column(UUID, primary_key=True, default=uuid.uuid4)
@@ -24,12 +22,9 @@ class Dish(Base):
 
 
 class DishModel(BaseModel):
-    """
-    Модель данных (Pydantic) для блюда.
-    """
+    """Модель данных (Pydantic) для блюда."""
     id: UUID4
     title: str
     description: str
     price: Decimal
     submenu_id: UUID4
-

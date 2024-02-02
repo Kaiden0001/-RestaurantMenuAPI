@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 
 from src.menu.api.utils import get_menu_service
-from src.menu.models.menu_model import MenuModel, MenuDetailModel
+from src.menu.models.menu_model import MenuDetailModel, MenuModel
 from src.menu.schemas.menu_schema import MenuCreate, MenuUpdate
 from src.menu.services.menu_service import MenuService
 
@@ -14,9 +14,7 @@ router = APIRouter(
 
 
 @router.get('/menus', response_model=list[MenuModel])
-async def get_menus(
-        menu_service: MenuService = Depends(
-            get_menu_service)) -> list[MenuModel] | None:
+async def get_menus(menu_service: MenuService = Depends(get_menu_service)) -> list[MenuModel] | None:
     """
     Получить список всех меню.
 
@@ -28,8 +26,7 @@ async def get_menus(
 
 @router.post('/menus', response_model=MenuModel, status_code=201)
 async def create_menu(menu_create: MenuCreate,
-                      menu_service: MenuService = Depends(
-                          get_menu_service)) -> MenuModel | None:
+                      menu_service: MenuService = Depends(get_menu_service)) -> MenuModel | None:
     """
     Создать новое меню.
 
@@ -41,9 +38,7 @@ async def create_menu(menu_create: MenuCreate,
 
 
 @router.get('/menus/{menu_id}', response_model=MenuDetailModel)
-async def get_menu(menu_id: UUID,
-                   menu_service: MenuService = Depends(
-                       get_menu_service)) -> MenuDetailModel | None:
+async def get_menu(menu_id: UUID, menu_service: MenuService = Depends(get_menu_service)) -> MenuDetailModel | None:
     """
     Получить детали конкретного меню по его идентификатору.
 
@@ -55,9 +50,9 @@ async def get_menu(menu_id: UUID,
 
 
 @router.patch('/menus/{menu_id}', response_model=MenuModel)
-async def update_menu(menu_id: UUID, menu_update: MenuUpdate,
-                      menu_service: MenuService = Depends(
-                          get_menu_service)) -> MenuModel | None:
+async def update_menu(menu_id: UUID,
+                      menu_update: MenuUpdate,
+                      menu_service: MenuService = Depends(get_menu_service)) -> MenuModel | None:
     """
     Обновить информацию о меню.
 
@@ -70,9 +65,7 @@ async def update_menu(menu_id: UUID, menu_update: MenuUpdate,
 
 
 @router.delete('/menus/{menu_id}', response_model=MenuModel)
-async def delete_menu(menu_id: UUID,
-                      menu_service: MenuService = Depends(
-                          get_menu_service)) -> MenuModel | None:
+async def delete_menu(menu_id: UUID, menu_service: MenuService = Depends(get_menu_service)) -> MenuModel | None:
     """
     Удалить меню по его идентификатору.
 

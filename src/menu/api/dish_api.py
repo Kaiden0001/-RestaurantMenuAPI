@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 
 from src.menu.api.utils import get_dish_service
 from src.menu.models.dish_model import DishModel
-from src.menu.schemas.dish_schema import DishUpdate, DishCreate
+from src.menu.schemas.dish_schema import DishCreate, DishUpdate
 from src.menu.services.dish_service import DishService
 
 router = APIRouter(
@@ -13,11 +13,8 @@ router = APIRouter(
 )
 
 
-@router.get('/menus/{menu_id}/submenus/{submenu_id}/dishes',
-            response_model=list[DishModel])
-async def get_dishes(submenu_id: UUID,
-                     dish_service: DishService = Depends(
-                         get_dish_service)) -> list[DishModel] | None:
+@router.get('/menus/{menu_id}/submenus/{submenu_id}/dishes', response_model=list[DishModel])
+async def get_dishes(submenu_id: UUID, dish_service: DishService = Depends(get_dish_service)) -> list[DishModel]:
     """
     Получить список блюд для указанного подменю.
 
@@ -28,11 +25,8 @@ async def get_dishes(submenu_id: UUID,
     return await dish_service.get_dishes(submenu_id)
 
 
-@router.get('/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
-            response_model=DishModel)
-async def get_dish(dish_id: UUID,
-                   dish_service: DishService = Depends(
-                       get_dish_service)) -> DishModel | None:
+@router.get('/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}', response_model=DishModel)
+async def get_dish(dish_id: UUID, dish_service: DishService = Depends(get_dish_service)) -> DishModel | None:
     """
     Получить информацию о конкретном блюде по его идентификатору.
 
@@ -43,11 +37,10 @@ async def get_dish(dish_id: UUID,
     return await dish_service.get_dish(dish_id)
 
 
-@router.post('/menus/{menu_id}/submenus/{submenu_id}/dishes',
-             response_model=DishModel, status_code=201)
-async def create_dish(submenu_id: UUID, dish_create: DishCreate,
-                      dish_service: DishService = Depends(
-                          get_dish_service)) -> DishModel | None:
+@router.post('/menus/{menu_id}/submenus/{submenu_id}/dishes', response_model=DishModel, status_code=201)
+async def create_dish(submenu_id: UUID,
+                      dish_create: DishCreate,
+                      dish_service: DishService = Depends(get_dish_service)) -> DishModel:
     """
     Создать новое блюдо для указанного подменю.
 
@@ -59,11 +52,10 @@ async def create_dish(submenu_id: UUID, dish_create: DishCreate,
     return await dish_service.create_dish(submenu_id, dish_create)
 
 
-@router.patch('/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
-              response_model=DishModel)
-async def update_dish(dish_id: UUID, dish_update: DishUpdate,
-                      dish_service: DishService = Depends(
-                          get_dish_service)) -> DishModel | None:
+@router.patch('/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}', response_model=DishModel)
+async def update_dish(dish_id: UUID,
+                      dish_update: DishUpdate,
+                      dish_service: DishService = Depends(get_dish_service)) -> DishModel:
     """
     Обновить информацию о блюде.
 
@@ -75,11 +67,8 @@ async def update_dish(dish_id: UUID, dish_update: DishUpdate,
     return await dish_service.update_dish(dish_id, dish_update)
 
 
-@router.delete('/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
-               response_model=DishModel)
-async def delete_dish(dish_id: UUID,
-                      dish_service: DishService = Depends(
-                          get_dish_service)) -> DishModel | None:
+@router.delete('/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}', response_model=DishModel)
+async def delete_dish(dish_id: UUID, dish_service: DishService = Depends(get_dish_service)) -> DishModel:
     """
     Удалить блюдо по его идентификатору.
 

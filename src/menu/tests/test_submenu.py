@@ -2,10 +2,7 @@ import uuid
 
 from httpx import AsyncClient, Response
 
-from src.menu.tests.conftest import (
-    set_env_variable,
-    remove_environment_variable
-)
+from src.menu.tests.conftest import remove_environment_variable, set_env_variable
 
 
 async def test_create_submenu(client: AsyncClient,
@@ -52,7 +49,7 @@ async def test_get_submenu_detail(client: AsyncClient,
     response_json: dict = response.json()
 
     assert response.status_code == 200
-    assert "id" in response_json
+    assert 'id' in response_json
     assert response_json['title'] == submenu_data['title']
     assert response_json['description'] == submenu_data['description']
     assert response_json['dishes_count'] == 0

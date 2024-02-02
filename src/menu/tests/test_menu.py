@@ -2,10 +2,7 @@ import uuid
 
 from httpx import AsyncClient, Response
 
-from src.menu.tests.conftest import (
-    set_env_variable,
-    remove_environment_variable
-)
+from src.menu.tests.conftest import remove_environment_variable, set_env_variable
 
 
 async def test_create_menu(client: AsyncClient, menu_data: dict) -> None:

@@ -2,21 +2,14 @@ import uuid
 
 from httpx import AsyncClient, Response
 
-from src.menu.tests.conftest import (
-    set_env_variable,
-    remove_environment_variable
-)
+from src.menu.tests.conftest import remove_environment_variable, set_env_variable
 
 
-async def test_create_dish(client: AsyncClient,
-                           menu_data: dict,
-                           submenu_data: dict,
-                           dish_data: dict) -> None:
+async def test_create_dish(client: AsyncClient, menu_data: dict, submenu_data: dict, dish_data: dict) -> None:
     menu_response: Response = await client.post('/menus', json=menu_data)
     menu_response_json: dict = menu_response.json()
 
-    submenu_response: Response = await client.post(
-        f'/menus/{menu_response_json["id"]}/submenus', json=submenu_data)
+    submenu_response: Response = await client.post(f'/menus/{menu_response_json["id"]}/submenus', json=submenu_data)
     submenu_response_json: dict = submenu_response.json()
 
     response: Response = await client.post(
@@ -29,19 +22,15 @@ async def test_create_dish(client: AsyncClient,
     assert 'id' in response_json
     assert response_json['title'] == dish_data['title']
     assert response_json['description'] == dish_data['description']
-    assert response_json['submenu_id'] == submenu_response_json["id"]
+    assert response_json['submenu_id'] == submenu_response_json['id']
 
     set_env_variable('menu_id', menu_response_json['id'])
     set_env_variable('submenu_id', submenu_response_json['id'])
     set_env_variable('dish_id', response_json['id'])
 
 
-async def test_get_dishes(client: AsyncClient,
-                          dish_data: dict,
-                          menu_id: str,
-                          submenu_id: str) -> None:
-    response: Response = await client.get(
-        f'/menus/{menu_id}/submenus/{submenu_id}/dishes')
+async def test_get_dishes(client: AsyncClient, dish_data: dict, menu_id: str, submenu_id: str) -> None:
+    response: Response = await client.get(f'/menus/{menu_id}/submenus/{submenu_id}/dishes')
     response_json: dict = response.json()
 
     assert response.status_code == 200
@@ -51,17 +40,13 @@ async def test_get_dishes(client: AsyncClient,
     assert response_json[0]['submenu_id'] == submenu_id
 
 
-async def test_get_dish(client: AsyncClient,
-                        submenu_data: dict,
-                        menu_id: str,
-                        submenu_id: str,
-                        dish_id: str) -> None:
+async def test_get_dish(client: AsyncClient, submenu_data: dict, menu_id: str, submenu_id: str, dish_id: str) -> None:
     response: Response = await client.get(
         f'/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}')
     response_json: dict = response.json()
 
     assert response.status_code == 200
-    assert "id" in response_json
+    assert 'id' in response_json
     assert response_json['title'] == submenu_data['title']
     assert response_json['description'] == submenu_data['description']
     assert response_json['submenu_id'] == submenu_id
@@ -72,9 +57,8 @@ async def test_patch_dish(client: AsyncClient,
                           menu_id: str,
                           submenu_id: str,
                           dish_id: str) -> None:
-    response: Response = await client.patch(
-        f'/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
-        json=dish_update_data)
+    response: Response = await client.patch(f'/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
+                                            json=dish_update_data)
     response_json: dict = response.json()
 
     assert response.status_code == 200

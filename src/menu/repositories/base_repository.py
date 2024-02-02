@@ -1,18 +1,18 @@
 from uuid import UUID
 
-from sqlalchemy import select, Select, Result
+from sqlalchemy import Result, Select, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.menu.models.dish_model import Dish, DishModel
-from src.menu.models.menu_model import MenuModel, Menu
-from src.menu.models.submenu_model import SubmenuModel, Submenu
+from src.menu.models.menu_model import Menu, MenuModel
+from src.menu.models.submenu_model import Submenu, SubmenuModel
 
 
 class BaseRepository:
     def __init__(self, session: AsyncSession):
         self.session: AsyncSession = session
 
-    async def get_menu_by_id(self, menu_id: UUID) -> MenuModel | None:
+    async def get_menu_by_id(self, menu_id: UUID) -> MenuModel:
         """
         Получение меню по его уникальному идентификатору.
 
@@ -23,7 +23,7 @@ class BaseRepository:
         result: Result = await self.session.execute(query)
         return result.scalar()
 
-    async def get_submenu_by_id(self, submenu_id: UUID) -> SubmenuModel | None:
+    async def get_submenu_by_id(self, submenu_id: UUID) -> SubmenuModel:
         """
         Получение подменю по его уникальному идентификатору.
 
@@ -34,7 +34,7 @@ class BaseRepository:
         result: Result = await self.session.execute(query)
         return result.scalar()
 
-    async def get_dish_by_id(self, dish_id: UUID) -> DishModel | None:
+    async def get_dish_by_id(self, dish_id: UUID) -> DishModel:
         """
         Получение блюда по его уникальному идентификатору.
 

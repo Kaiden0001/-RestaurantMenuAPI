@@ -2,35 +2,34 @@ from uuid import UUID
 
 from src.menu.models.dish_model import DishModel
 from src.menu.repositories.dish_repository import DishRepository
-from src.menu.schemas.dish_schema import DishUpdate, DishCreate
+from src.menu.schemas.dish_schema import DishCreate, DishUpdate
 
 
 class DishService:
     def __init__(self, dish_repository: DishRepository):
         self.dish_repository = dish_repository
 
-    async def get_dishes(self, submenu_id: UUID) -> list[DishModel] | None:
+    async def get_dishes(self, submenu_id: UUID) -> list[DishModel]:
         """
         Получить список блюд подменю.
 
         :param submenu_id: Идентификатор подменю.
-        :return: Список блюд подменю или None, если подменю не найдено.
+        :return: Список блюд подменю.
 
         """
         return await self.dish_repository.get_dishes(submenu_id)
 
-    async def get_dish(self, dish_id: UUID) -> DishModel | None:
+    async def get_dish(self, dish_id: UUID) -> DishModel:
         """
         Получить информацию о блюде по его идентификатору.
 
         :param dish_id: Идентификатор блюда.
-        :return: Модель блюда или None, если блюдо не найдено.
+        :return: Модель блюда.
 
         """
         return await self.dish_repository.get_dish(dish_id)
 
-    async def create_dish(self, submenu_id: UUID,
-                          dish_update: DishCreate) -> DishModel:
+    async def create_dish(self, submenu_id: UUID, dish_update: DishCreate) -> DishModel:
         """
         Создать новое блюдо в подменю.
 
@@ -51,12 +50,12 @@ class DishService:
         """
         return await self.dish_repository.update_dish(dish_id, dish_update)
 
-    async def delete_dish(self, dish_id: UUID) -> DishModel | None:
+    async def delete_dish(self, dish_id: UUID) -> DishModel:
         """
         Удалить блюдо.
 
         :param dish_id: Идентификатор блюда, которое нужно удалить.
-        :return: Модель удаленного блюда или None, если блюдо не найдено.
+        :return: Модель удаленного блюда.
 
         """
         return await self.dish_repository.delete_dish(dish_id)

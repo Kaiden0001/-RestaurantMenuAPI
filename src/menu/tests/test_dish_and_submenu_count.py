@@ -1,8 +1,6 @@
 from httpx import AsyncClient, Response
-from src.menu.tests.conftest import (
-    set_env_variable,
-    remove_environment_variable
-)
+
+from src.menu.tests.conftest import remove_environment_variable, set_env_variable
 
 
 async def test_create_menu(client: AsyncClient,
@@ -11,7 +9,7 @@ async def test_create_menu(client: AsyncClient,
     response_json: dict = response.json()
 
     assert response.status_code == 201
-    assert "id" in response_json
+    assert 'id' in response_json
 
     set_env_variable('menu_id', response_json['id'])
 
@@ -24,7 +22,7 @@ async def test_create_submenu(client: AsyncClient,
     response_json: dict = response.json()
 
     assert response.status_code == 201
-    assert "id" in response_json
+    assert 'id' in response_json
 
     set_env_variable('submenu_id', response_json['id'])
 
@@ -72,7 +70,7 @@ async def test_get_submenu(client: AsyncClient,
     response_json: dict = response.json()
 
     assert response.status_code == 200
-    assert "id" in response_json
+    assert 'id' in response_json
     assert response_json['dishes_count'] == 2
 
 
@@ -121,7 +119,7 @@ async def test_delete_menu(client: AsyncClient, menu_id: str) -> None:
 
 
 async def test_get_menus(client: AsyncClient) -> None:
-    response: Response = await client.get(f'/menus')
+    response: Response = await client.get('/menus')
     response_json: dict = response.json()
 
     assert response.status_code == 200

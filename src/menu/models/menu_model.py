@@ -9,9 +9,7 @@ from src.menu.models.submenu_model import Submenu
 
 
 class Menu(Base):
-    """
-    Модель базы данных для меню.
-    """
+    """Модель базы данных для меню."""
     __tablename__ = 'menu'
 
     id: UUID4 = Column(UUID, primary_key=True, default=uuid.uuid4)
@@ -22,17 +20,13 @@ class Menu(Base):
 
 
 class MenuModel(BaseModel):
-    """
-    Модель данных (Pydantic) для меню.
-    """
+    """Модель данных (Pydantic) для меню."""
     id: UUID4
     title: str
     description: str
 
 
 class MenuDetailModel(MenuModel):
-    """
-    Модель данных (Pydantic) для меню с доп. полями.
-    """
+    """Модель данных (Pydantic) для меню с доп. полями."""
     submenus_count: int
     dishes_count: int
