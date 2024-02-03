@@ -17,7 +17,7 @@ class BaseRepository:
         Получение меню по его уникальному идентификатору.
 
         :param menu_id: Уникальный идентификатор меню (UUID).
-        :return: Модель данных MenuModel или None, если меню не найдено.
+        :return: Модель данных MenuModel.
         """
         query: Select = select(Menu).where(Menu.id == menu_id)
         result: Result = await self.session.execute(query)
@@ -28,7 +28,7 @@ class BaseRepository:
         Получение подменю по его уникальному идентификатору.
 
         :param submenu_id: Уникальный идентификатор подменю (UUID).
-        :return: Модель данных SubmenuModel или None, если подменю не найдено.
+        :return: Модель данных SubmenuModel.
         """
         query: Select = select(Submenu).where(Submenu.id == submenu_id)
         result: Result = await self.session.execute(query)
@@ -39,7 +39,7 @@ class BaseRepository:
         Получение блюда по его уникальному идентификатору.
 
         :param dish_id: Уникальный идентификатор блюда (UUID).
-        :return: Модель данных DishModel или None, если блюдо не найдено.
+        :return: Модель данных DishModel.
         """
         query: Select = select(Dish).where(Dish.id == dish_id)
         result: Result = await self.session.execute(query)

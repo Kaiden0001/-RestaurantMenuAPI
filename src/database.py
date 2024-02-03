@@ -1,5 +1,6 @@
 from typing import AsyncGenerator
 
+from aioredis import Redis, from_url
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -25,7 +26,7 @@ Base: DeclarativeMeta = declarative_base()
 
 engine: AsyncEngine = create_async_engine(DATABASE_URL)
 async_session_maker = async_sessionmaker(
-    engine,
+    bind=engine,
     autoflush=False,
     autocommit=False,
     expire_on_commit=False
@@ -35,3 +36,9 @@ async_session_maker = async_sessionmaker(
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_maker() as session:
         yield session
+        await session.close()
+
+
+async def get_redis() -> Redis:
+    async with await from_url(REDIS_URL) as redis:
+        yield redis

@@ -16,7 +16,7 @@ class DishRepository(BaseRepository):
         Получение информации о блюде по его уникальному идентификатору.
 
         :param dish_id: Уникальный идентификатор блюда (UUID).
-        :return: Модель данных DishModel или None, если блюдо не найдено.
+        :return: Модель данных DishModel.
         :raise HTTPException: Исключение с кодом 404, если блюдо не найдено.
         """
         db_dish: Any = await self.get_dish_by_id(dish_id)

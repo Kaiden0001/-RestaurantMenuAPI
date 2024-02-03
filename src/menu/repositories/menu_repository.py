@@ -28,7 +28,7 @@ class MenuRepository(BaseRepository):
         Получение подробной информации о конкретном меню.
 
         :param menu_id: Уникальный идентификатор меню (UUID).
-        :return: Модель данных MenuDetailModel или None, если меню не найдено.
+        :return: Модель данных MenuDetailModel.
         :raise HTTPException: Исключение с кодом 404, если меню не найдено.
         """
         subquery: Any = select(

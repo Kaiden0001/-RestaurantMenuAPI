@@ -17,8 +17,7 @@ class SubmenuRepository(BaseRepository):
 
         :param menu_id: Уникальный идентификатор меню, для которого нужно
         получить подменю.
-        :return: Список моделей данных SubmenuModel или None, если подменю не
-        найдено.
+        :return: Список моделей данных SubmenuModel.
         """
         query: Select = select(Submenu).where(Submenu.menu_id == menu_id)
         result: Result = await self.session.execute(query)
@@ -48,8 +47,7 @@ class SubmenuRepository(BaseRepository):
         :param menu_id: Уникальный идентификатор меню, к которому привязано
         подменю.
         :param submenu_id: Уникальный идентификатор подменю (UUID).
-        :return: Модель данных SubmenuDetailModel или None, если подменю не
-        найдено.
+        :return: Модель данных SubmenuDetailModel.
         :raise HTTPException: Исключение с кодом 404, если подменю не найдено.
         """
         submenu_query: Select = select(

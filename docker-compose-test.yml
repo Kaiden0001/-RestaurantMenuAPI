@@ -17,6 +17,8 @@ services:
     depends_on:
       db_test:
         condition: service_healthy
+      redis_test:
+        condition: service_started
 
   db_test:
     image: postgres:15.1-alpine
@@ -31,8 +33,9 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
+  redis_test:
     image: redis:7-alpine
+    restart: always
     networks:
       - menu_test
 
