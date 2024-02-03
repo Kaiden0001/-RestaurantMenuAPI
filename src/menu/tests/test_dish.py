@@ -3,18 +3,19 @@ import uuid
 from httpx import AsyncClient, Response
 
 from src.menu.tests.conftest import remove_environment_variable, set_env_variable
+from src.menu.tests.utils import reverse
 
 
 async def test_create_dish(client: AsyncClient, menu_data: dict, submenu_data: dict, dish_data: dict) -> None:
-    menu_response: Response = await client.post('/menus', json=menu_data)
+    menu_response: Response = await client.post(reverse('create_menu'), json=menu_data)
     menu_response_json: dict = menu_response.json()
 
-    submenu_response: Response = await client.post(f'/menus/{menu_response_json["id"]}/submenus', json=submenu_data)
+    submenu_response: Response = await client.post(
+        reverse('create_submenu', menu_response_json['id']), json=submenu_data)
     submenu_response_json: dict = submenu_response.json()
 
     response: Response = await client.post(
-        f'/menus/{submenu_response_json["menu_id"]}/submenus/{submenu_response_json["id"]}/dishes',
-        json=dish_data)
+        reverse('create_dish', submenu_response_json['menu_id'], submenu_response_json['id']), json=dish_data)
 
     response_json: dict = response.json()
 
@@ -30,7 +31,7 @@ async def test_create_dish(client: AsyncClient, menu_data: dict, submenu_data: d
 
 
 async def test_get_dishes(client: AsyncClient, dish_data: dict, menu_id: str, submenu_id: str) -> None:
-    response: Response = await client.get(f'/menus/{menu_id}/submenus/{submenu_id}/dishes')
+    response: Response = await client.get(reverse('get_dishes', menu_id, submenu_id))
     response_json: dict = response.json()
 
     assert response.status_code == 200
@@ -41,8 +42,7 @@ async def test_get_dishes(client: AsyncClient, dish_data: dict, menu_id: str, su
 
 
 async def test_get_dish(client: AsyncClient, submenu_data: dict, menu_id: str, submenu_id: str, dish_id: str) -> None:
-    response: Response = await client.get(
-        f'/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}')
+    response: Response = await client.get(reverse('get_dish', menu_id, submenu_id, dish_id))
     response_json: dict = response.json()
 
     assert response.status_code == 200
@@ -52,13 +52,14 @@ async def test_get_dish(client: AsyncClient, submenu_data: dict, menu_id: str, s
     assert response_json['submenu_id'] == submenu_id
 
 
-async def test_patch_dish(client: AsyncClient,
-                          dish_update_data: dict,
-                          menu_id: str,
-                          submenu_id: str,
-                          dish_id: str) -> None:
-    response: Response = await client.patch(f'/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
-                                            json=dish_update_data)
+async def test_patch_dish(
+        client: AsyncClient,
+        dish_update_data: dict,
+        menu_id: str,
+        submenu_id: str,
+        dish_id: str
+) -> None:
+    response: Response = await client.patch(reverse('update_dish', menu_id, submenu_id, dish_id), json=dish_update_data)
     response_json: dict = response.json()
 
     assert response.status_code == 200
@@ -67,35 +68,32 @@ async def test_patch_dish(client: AsyncClient,
     assert response_json['price'] == dish_update_data['price']
 
 
-async def test_patch_dish_invalid_id(client: AsyncClient,
-                                     dish_update_data: dict,
-                                     menu_id: str,
-                                     submenu_id: str) -> None:
+async def test_patch_dish_invalid_id(
+        client: AsyncClient,
+        dish_update_data: dict,
+        menu_id: str,
+        submenu_id: str
+) -> None:
     response: Response = await client.patch(
-        f'/menus/{menu_id}/submenus/{submenu_id}/dishes/{uuid.uuid4()}',
-        json=dish_update_data)
+        reverse('update_dish', menu_id, submenu_id, uuid.uuid4()), json=dish_update_data)
 
     assert response.status_code == 404
 
 
-async def test_delete_dish_invalid_id(client: AsyncClient,
-                                      menu_id: str,
-                                      submenu_id: str) -> None:
-    response: Response = await client.delete(
-        f'/menus/{menu_id}/submenus/{submenu_id}/dishes/{uuid.uuid4()}')
+async def test_delete_dish_invalid_id(
+        client: AsyncClient,
+        menu_id: str,
+        submenu_id: str
+) -> None:
+    response: Response = await client.delete(reverse('delete_dish', menu_id, submenu_id, uuid.uuid4()))
 
     assert response.status_code == 404
 
 
-async def test_delete_dish(client: AsyncClient,
-                           menu_id: str,
-                           submenu_id: str,
-                           dish_id: str) -> None:
-    response_dish: Response = await client.delete(
-        f'/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}')
-    response_menu: Response = await client.delete(
-        f'/menus/{menu_id}/submenus/{submenu_id}')
-    response_submenu: Response = await client.delete(f'/menus/{menu_id}')
+async def test_delete_dish(client: AsyncClient, menu_id: str, submenu_id: str, dish_id: str) -> None:
+    response_dish: Response = await client.delete(reverse('delete_dish', menu_id, submenu_id, dish_id))
+    response_submenu: Response = await client.delete(reverse('delete_submenu', menu_id, submenu_id))
+    response_menu: Response = await client.delete(reverse('delete_menu', menu_id))
 
     assert response_dish.status_code == 200
     assert response_menu.status_code == 200

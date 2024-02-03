@@ -146,7 +146,7 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
     :return: Генератор асинхронного HTTP-клиента.
     :rtype: AsyncGenerator[AsyncClient, None]
     """
-    async with AsyncClient(app=app, base_url='http://web/api/v1') as client:
+    async with AsyncClient(app=app, base_url='http://web_test') as client:
         yield client
 
 
