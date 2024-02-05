@@ -13,17 +13,17 @@ class MenuService:
         self.menu_repository = menu_repository
         self.cache_service: CacheService = CacheService(redis)
 
-    async def get_menus(self) -> list[MenuModel]:
+    async def get_menus(self) -> list[MenuDetailModel]:
         """
         Получить список меню.
 
         :return: Список моделей меню.
         """
-        result_cache: list[MenuModel] | None = await self.cache_service.get_cache('get_menus')
+        result_cache: list[MenuDetailModel] | None = await self.cache_service.get_cache('get_menus')
         if result_cache:
             return result_cache
 
-        result: list[MenuModel] = await self.menu_repository.get_menus()
+        result: list[MenuDetailModel] = await self.menu_repository.get_menus()
 
         await self.cache_service.set_cache(cache_key='get_menus', result=result)
         return result

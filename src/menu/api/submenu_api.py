@@ -15,12 +15,12 @@ router = APIRouter(
 
 @router.get(
     '/menus/{menu_id}/submenus',
-    response_model=list[SubmenuModel]
+    response_model=list[SubmenuDetailModel]
 )
 async def get_submenus(
         menu_id: UUID,
         submenu_service: SubmenuService = Depends(get_submenu_service)
-) -> list[SubmenuModel]:
+) -> list[SubmenuDetailModel]:
     """
     Получить список подменю для указанного меню.
 

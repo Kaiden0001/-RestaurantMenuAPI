@@ -12,24 +12,14 @@ from src.menu.schemas.menu_schema import MenuCreate, MenuUpdate
 
 
 class MenuRepository(BaseRepository):
-    async def get_menus(self) -> list[MenuModel]:
-        """
-        Получение списка меню.
 
-        :return: Список моделей данных MenuModel.
+    async def _get_menu_query(self, menu_id: UUID | None = None) -> Result:
         """
-        query: Select = select(Menu)
-        result: Result = await self.session.execute(query)
-        result_all: list[MenuModel] = result.scalars().all()
-        return result_all
+        Формирует запрос для получения информации о меню.
 
-    async def get_menu_detail(self, menu_id: UUID) -> MenuDetailModel:
-        """
-        Получение подробной информации о конкретном меню.
-
-        :param menu_id: Уникальный идентификатор меню (UUID).
-        :return: Модель данных MenuDetailModel.
-        :raise HTTPException: Исключение с кодом 404, если меню не найдено.
+        :param menu_id: Уникальный идентификатор меню (UUID). Если не указан, будет возвращена информация
+        по всем меню.
+        :return: Результат выполнения запроса.
         """
         subquery: Any = select(
             Dish.submenu_id,
@@ -42,22 +32,61 @@ class MenuRepository(BaseRepository):
             Menu.description,
             func.count(Submenu.id).label('submenu_count'),
             func.sum(subquery.c.submenu_dish_count).label('total_dish_count')
-        ).select_from(Menu).outerjoin(Submenu).outerjoin(subquery, Submenu.id == subquery.c.submenu_id).where(
-            Menu.id == menu_id).group_by(Menu.id)
+        ).select_from(Menu).outerjoin(Submenu).outerjoin(subquery, Submenu.id == subquery.c.submenu_id)
 
-        result_menu: Result = await self.session.execute(menu_query)
-        menu: Any = result_menu.first()
+        if menu_id:
+            menu_query = menu_query.where(Menu.id == menu_id).group_by(Menu.id)
+        else:
+            menu_query = menu_query.group_by(Menu.id)
 
-        if not menu:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='menu not found')
+        return await self.session.execute(menu_query)
 
-        menu_detail: MenuDetailModel = MenuDetailModel(
+    @staticmethod
+    def _create_menu_detail_model(menu: Any) -> MenuDetailModel:
+        """
+        Создает экземпляр модели данных MenuDetailModel на основе данных из запроса.
+
+        :param menu: Результат запроса к таблице меню.
+        :return: Экземпляр модели данных MenuDetailModel.
+        """
+        return MenuDetailModel(
             id=menu.id,
             title=menu.title,
             description=menu.description,
             submenus_count=int(menu.submenu_count) if menu.submenu_count is not None else 0,
             dishes_count=int(menu.total_dish_count) if menu.total_dish_count is not None else 0
         )
+
+    async def get_menus(self) -> list[MenuDetailModel]:
+        """
+        Получение списка меню.
+
+        :return: Список моделей данных MenuModel.
+        """
+        result_menus: Result = await self._get_menu_query()
+        menus: list[MenuDetailModel] = []
+
+        for menu in result_menus:
+            menu_detail: MenuDetailModel = self._create_menu_detail_model(menu)
+            menus.append(menu_detail)
+
+        return menus
+
+    async def get_menu_detail(self, menu_id: UUID) -> MenuDetailModel:
+        """
+        Получение подробной информации о конкретном меню.
+
+        :param menu_id: Уникальный идентификатор меню (UUID).
+        :return: Модель данных MenuDetailModel.
+        :raise HTTPException: Исключение с кодом 404, если меню не найдено.
+        """
+        result_menu: Result = await self._get_menu_query(menu_id)
+        menu: Any = result_menu.first()
+
+        if not menu:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='menu not found')
+
+        menu_detail: MenuDetailModel = self._create_menu_detail_model(menu)
         return menu_detail
 
     async def create_menu(self, menu_create: MenuCreate) -> MenuModel:

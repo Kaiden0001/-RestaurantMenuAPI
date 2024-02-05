@@ -11,7 +11,34 @@ from src.menu.schemas.submenu_schema import SubmenuCreate, SubmenuUpdate
 
 
 class SubmenuRepository(BaseRepository):
-    async def get_submenus(self, menu_id: UUID) -> list[SubmenuModel]:
+
+    async def _get_submenu_query(self, menu_id: UUID, submenu_id: UUID | None = None) -> Result:
+        submenu_query: Select = select(
+            Submenu.id,
+            Submenu.title,
+            Submenu.description,
+            func.count(Dish.id).label('dish_count')
+        ).select_from(Submenu).outerjoin(Dish, Submenu.id == Dish.submenu_id)
+
+        if submenu_id:
+            submenu_query = submenu_query.filter(
+                Submenu.menu_id == menu_id, Submenu.id == submenu_id).group_by(Submenu.id)
+        else:
+            submenu_query = submenu_query.filter(Submenu.menu_id == menu_id).group_by(Submenu.id)
+
+        return await self.session.execute(submenu_query)
+
+    @staticmethod
+    def _create_submenu_detail_model(submenu: Any, menu_id: UUID) -> SubmenuDetailModel:
+        return SubmenuDetailModel(
+            id=submenu.id,
+            title=submenu.title,
+            menu_id=menu_id,
+            description=submenu.description,
+            dishes_count=int(submenu.dish_count) if submenu.dish_count is not None else 0
+        )
+
+    async def get_submenus(self, menu_id: UUID) -> list[SubmenuDetailModel]:
         """
         Получение списка подменю для конкретного меню.
 
@@ -19,10 +46,13 @@ class SubmenuRepository(BaseRepository):
         получить подменю.
         :return: Список моделей данных SubmenuModel.
         """
-        query: Select = select(Submenu).where(Submenu.menu_id == menu_id)
-        result: Result = await self.session.execute(query)
-        result_all: list[SubmenuModel] = result.scalars().all()
-        return result_all
+        result_submenus: Result = await self._get_submenu_query(menu_id)
+        submenus: list[SubmenuDetailModel] = []
+
+        for submenu in result_submenus:
+            submenu_detail: SubmenuDetailModel = self._create_submenu_detail_model(submenu, menu_id)
+            submenus.append(submenu_detail)
+        return submenus
 
     async def create_submenu(self, menu_id: UUID, submenu_create: SubmenuCreate) -> SubmenuModel:
         """
@@ -57,8 +87,7 @@ class SubmenuRepository(BaseRepository):
             func.count(Dish.id).label('dish_count')
         ).select_from(Submenu). \
             outerjoin(Dish, Submenu.id == Dish.submenu_id). \
-            where(Submenu.menu_id == menu_id, Submenu.id == submenu_id). \
-            group_by(Submenu.id)
+            where(Submenu.menu_id == menu_id, Submenu.id == submenu_id).group_by(Submenu.id)
 
         result_submenu: Result = await self.session.execute(submenu_query)
         submenu: Any = result_submenu.first()

@@ -15,11 +15,11 @@ router = APIRouter(
 
 @router.get(
     '/menus',
-    response_model=list[MenuModel]
+    response_model=list[MenuDetailModel]
 )
 async def get_menus(
         menu_service: MenuService = Depends(get_menu_service)
-) -> list[MenuModel]:
+) -> list[MenuDetailModel]:
     """
     Получить список всех меню.
 

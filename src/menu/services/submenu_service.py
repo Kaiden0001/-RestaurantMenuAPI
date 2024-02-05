@@ -13,7 +13,7 @@ class SubmenuService:
         self.submenu_repository = submenu_repository
         self.cache_service: CacheService = CacheService(redis)
 
-    async def get_submenus(self, menu_id: UUID) -> list[SubmenuModel]:
+    async def get_submenus(self, menu_id: UUID) -> list[SubmenuDetailModel]:
         """
         Получить список подменю для конкретного меню.
 
@@ -21,12 +21,12 @@ class SubmenuService:
         :return: Список моделей подменю.
         """
         cache_key: str = f'get_submenus:{menu_id}'
-        result_cache: list[SubmenuModel] | None = await self.cache_service.get_cache(cache_key)
+        result_cache: list[SubmenuDetailModel] | None = await self.cache_service.get_cache(cache_key)
 
         if result_cache:
             return result_cache
 
-        result: list[SubmenuModel] = await self.submenu_repository.get_submenus(menu_id)
+        result: list[SubmenuDetailModel] = await self.submenu_repository.get_submenus(menu_id)
         await self.cache_service.set_cache(cache_key=cache_key, result=result)
         return result
 
