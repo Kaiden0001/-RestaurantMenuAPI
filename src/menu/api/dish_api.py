@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, status
 
 from src.menu.api.dependencies import get_dish_service
 from src.menu.models.dish_model import DishModel
@@ -13,7 +13,9 @@ router = APIRouter(
 )
 
 
-@router.get('/menus/{menu_id}/submenus/{submenu_id}/dishes', response_model=list[DishModel])
+@router.get(
+    '/menus/{menu_id}/submenus/{submenu_id}/dishes',
+    response_model=list[DishModel])
 async def get_dishes(
         menu_id: UUID,
         submenu_id: UUID,
@@ -30,7 +32,10 @@ async def get_dishes(
     return await dish_service.get_dishes(menu_id, submenu_id)
 
 
-@router.get('/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}', response_model=DishModel)
+@router.get(
+    '/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
+    response_model=DishModel
+)
 async def get_dish(
         request: Request,
         dish_id: UUID,
@@ -47,7 +52,11 @@ async def get_dish(
     return await dish_service.get_dish(request.url.path, dish_id)
 
 
-@router.post('/menus/{menu_id}/submenus/{submenu_id}/dishes', response_model=DishModel, status_code=201)
+@router.post(
+    '/menus/{menu_id}/submenus/{submenu_id}/dishes',
+    response_model=DishModel,
+    status_code=status.HTTP_201_CREATED
+)
 async def create_dish(
         menu_id: UUID,
         submenu_id: UUID,
@@ -66,7 +75,10 @@ async def create_dish(
     return await dish_service.create_dish(menu_id, submenu_id, dish_create)
 
 
-@router.patch('/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}', response_model=DishModel)
+@router.patch(
+    '/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
+    response_model=DishModel
+)
 async def update_dish(
         menu_id: UUID,
         submenu_id: UUID,
@@ -87,7 +99,10 @@ async def update_dish(
     return await dish_service.update_dish(menu_id, submenu_id, dish_id, dish_update)
 
 
-@router.delete('/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}', response_model=DishModel)
+@router.delete(
+    '/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}',
+    response_model=DishModel
+)
 async def delete_dish(
         menu_id: UUID,
         submenu_id: UUID,

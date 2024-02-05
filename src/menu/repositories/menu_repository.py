@@ -1,7 +1,7 @@
 from typing import Any
 from uuid import UUID
 
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlalchemy import Delete, Result, Select, Update, delete, func, select, update
 
 from src.menu.models.dish_model import Dish
@@ -49,7 +49,7 @@ class MenuRepository(BaseRepository):
         menu: Any = result_menu.first()
 
         if not menu:
-            raise HTTPException(status_code=404, detail='menu not found')
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='menu not found')
 
         menu_detail: MenuDetailModel = MenuDetailModel(
             id=menu.id,
@@ -85,7 +85,7 @@ class MenuRepository(BaseRepository):
         """
         existing_menu: Any = await self.get_menu_by_id(menu_id)
         if not existing_menu:
-            raise HTTPException(status_code=404, detail='Menu not found')
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Menu not found')
 
         query: Update = update(Menu).where(Menu.id == menu_id).values(**menu_update.model_dump())
         await self.session.execute(query)
@@ -104,7 +104,7 @@ class MenuRepository(BaseRepository):
         existing_menu: MenuModel = await self.get_menu_by_id(menu_id)
 
         if not existing_menu:
-            raise HTTPException(status_code=404, detail='menu not found')
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='menu not found')
 
         query: Delete = delete(Menu).where(Menu.id == menu_id)
         await self.session.execute(query)

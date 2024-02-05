@@ -1,7 +1,7 @@
 from typing import Any
 from uuid import UUID
 
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlalchemy import Delete, Result, Select, Update, delete, select, update
 
 from src.menu.models.dish_model import Dish, DishModel
@@ -21,7 +21,7 @@ class DishRepository(BaseRepository):
         """
         db_dish: Any = await self.get_dish_by_id(dish_id)
         if not db_dish:
-            raise HTTPException(status_code=404, detail='dish not found')
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='dish not found')
 
         return db_dish
 
@@ -48,7 +48,7 @@ class DishRepository(BaseRepository):
        """
         existing_dish: Any = await self.get_dish_by_id(dish_id)
         if not existing_dish:
-            raise HTTPException(status_code=404, detail='dish not found')
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='dish not found')
         del existing_dish
 
         query: Update = update(Dish).where(Dish.id == dish_id).values(**dish_update.model_dump())
@@ -83,7 +83,7 @@ class DishRepository(BaseRepository):
         db_dish: DishModel | None = await self.get_dish_by_id(dish_id)
 
         if not db_dish:
-            raise HTTPException(status_code=404, detail='dish not found')
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='dish not found')
 
         query: Delete = delete(Dish).where(Dish.id == dish_id)
         await self.session.execute(query)

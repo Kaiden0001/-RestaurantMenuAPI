@@ -1,7 +1,7 @@
 from typing import Any
 from uuid import UUID
 
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlalchemy import Delete, Result, Select, Update, delete, func, select, update
 
 from src.menu.models.dish_model import Dish
@@ -64,7 +64,7 @@ class SubmenuRepository(BaseRepository):
         submenu: Any = result_submenu.first()
 
         if not submenu:
-            raise HTTPException(status_code=404, detail='submenu not found')
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='submenu not found')
 
         submenu_detail: SubmenuDetailModel = SubmenuDetailModel(
             id=submenu.id,
@@ -88,7 +88,7 @@ class SubmenuRepository(BaseRepository):
         """
         existing_submenu: Any = await self.get_submenu_by_id(submenu_id)
         if not existing_submenu:
-            raise HTTPException(status_code=404, detail='submenu not found')
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='submenu not found')
 
         query: Update = update(Submenu).where(Submenu.menu_id == menu_id,
                                               Submenu.id == submenu_id).values(**submenu_update.model_dump())
@@ -109,7 +109,7 @@ class SubmenuRepository(BaseRepository):
         existing_submenu: SubmenuModel = await self.get_submenu_by_id(submenu_id)
 
         if not existing_submenu:
-            raise HTTPException(status_code=404, detail='submenu not found')
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='submenu not found')
 
         query: Delete = delete(Submenu).where(Submenu.menu_id == menu_id, Submenu.id == submenu_id)
         await self.session.execute(query)

@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, status
 
 from src.menu.api.dependencies import get_menu_service
 from src.menu.models.menu_model import MenuDetailModel, MenuModel
@@ -13,7 +13,10 @@ router = APIRouter(
 )
 
 
-@router.get('/menus', response_model=list[MenuModel])
+@router.get(
+    '/menus',
+    response_model=list[MenuModel]
+)
 async def get_menus(
         menu_service: MenuService = Depends(get_menu_service)
 ) -> list[MenuModel]:
@@ -26,7 +29,11 @@ async def get_menus(
     return await menu_service.get_menus()
 
 
-@router.post('/menus', response_model=MenuModel, status_code=201)
+@router.post(
+    '/menus',
+    response_model=MenuModel,
+    status_code=status.HTTP_201_CREATED
+)
 async def create_menu(
         menu_create: MenuCreate,
         menu_service: MenuService = Depends(get_menu_service)
@@ -41,7 +48,10 @@ async def create_menu(
     return await menu_service.create_menu(menu_create)
 
 
-@router.get('/menus/{menu_id}', response_model=MenuDetailModel)
+@router.get(
+    '/menus/{menu_id}',
+    response_model=MenuDetailModel
+)
 async def get_menu(
         request: Request,
         menu_id: UUID,
@@ -58,7 +68,10 @@ async def get_menu(
     return await menu_service.get_menu(request.url.path, menu_id)
 
 
-@router.patch('/menus/{menu_id}', response_model=MenuModel)
+@router.patch(
+    '/menus/{menu_id}',
+    response_model=MenuModel
+)
 async def update_menu(
         request: Request,
         menu_id: UUID,
@@ -77,7 +90,10 @@ async def update_menu(
     return await menu_service.update_menu(request.url.path, menu_id, menu_update)
 
 
-@router.delete('/menus/{menu_id}', response_model=MenuModel)
+@router.delete(
+    '/menus/{menu_id}',
+    response_model=MenuModel
+)
 async def delete_menu(
         menu_id: UUID,
         menu_service: MenuService = Depends(get_menu_service)

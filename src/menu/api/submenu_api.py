@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, status
 
 from src.menu.api.dependencies import get_submenu_service
 from src.menu.models.submenu_model import SubmenuDetailModel, SubmenuModel
@@ -13,7 +13,10 @@ router = APIRouter(
 )
 
 
-@router.get('/menus/{menu_id}/submenus', response_model=list[SubmenuModel])
+@router.get(
+    '/menus/{menu_id}/submenus',
+    response_model=list[SubmenuModel]
+)
 async def get_submenus(
         menu_id: UUID,
         submenu_service: SubmenuService = Depends(get_submenu_service)
@@ -28,7 +31,10 @@ async def get_submenus(
     return await submenu_service.get_submenus(menu_id)
 
 
-@router.get('/menus/{menu_id}/submenus/{submenu_id}', response_model=SubmenuDetailModel)
+@router.get(
+    '/menus/{menu_id}/submenus/{submenu_id}',
+    response_model=SubmenuDetailModel
+)
 async def get_submenu(
         request: Request,
         menu_id: UUID,
@@ -47,7 +53,11 @@ async def get_submenu(
     return await submenu_service.get_submenu_detail(request.url.path, menu_id, submenu_id)
 
 
-@router.post('/menus/{menu_id}/submenus', response_model=SubmenuModel, status_code=201)
+@router.post(
+    '/menus/{menu_id}/submenus',
+    response_model=SubmenuModel,
+    status_code=status.HTTP_201_CREATED
+)
 async def create_submenu(
         menu_id: UUID,
         submenu_create: SubmenuCreate,
@@ -64,7 +74,10 @@ async def create_submenu(
     return await submenu_service.create_submenu(menu_id, submenu_create)
 
 
-@router.patch('/menus/{menu_id}/submenus/{submenu_id}', response_model=SubmenuModel)
+@router.patch(
+    '/menus/{menu_id}/submenus/{submenu_id}',
+    response_model=SubmenuModel
+)
 async def update_submenu(
         request: Request,
         menu_id: UUID,
@@ -85,7 +98,10 @@ async def update_submenu(
     return await submenu_service.update_submenu(request.url.path, menu_id, submenu_id, submenu_update)
 
 
-@router.delete('/menus/{menu_id}/submenus/{submenu_id}')
+@router.delete(
+    '/menus/{menu_id}/submenus/{submenu_id}',
+    response_model=SubmenuModel
+)
 async def delete_submenu(
         menu_id: UUID,
         submenu_id: UUID,
