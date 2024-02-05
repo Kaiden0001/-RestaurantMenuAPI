@@ -72,6 +72,7 @@ class CacheService:
 
                 caches_to_delete.extend(
                     [
+                        'get_menus',
                         f'get_submenus:{kwargs["menu_id"]}',
                         f'/api/v1/menus/{kwargs["menu_id"]}',
                         f'get_dishes:{kwargs["menu_id"]}:{kwargs["submenu_id"]}',
@@ -83,10 +84,12 @@ class CacheService:
             case 'dish':
                 caches_to_delete.extend(
                     [
+                        'get_menus',
                         f'/api/v1/menus/{kwargs["menu_id"]}/submenus/{kwargs["submenu_id"]}/dishes/{kwargs["dish_id"]}',
                         f'/api/v1/menus/{kwargs["menu_id"]}',
                         f'/api/v1/menus/{kwargs["menu_id"]}/submenus/{kwargs["submenu_id"]}',
-                        f'get_dishes:{kwargs["menu_id"]}:{kwargs["submenu_id"]}'
+                        f'get_dishes:{kwargs["menu_id"]}:{kwargs["submenu_id"]}',
+                        f'get_submenus:{kwargs["menu_id"]}',
                     ]
                 )
 

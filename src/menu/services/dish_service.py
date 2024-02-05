@@ -61,7 +61,9 @@ class DishService:
         await self.cache_service.delete_cache(
             f'/api/v1/menus/{menu_id}',
             f'/api/v1/menus/{menu_id}/submenus/{submenu_id}',
-            f'get_dishes:{menu_id}:{submenu_id}'
+            f'get_dishes:{menu_id}:{submenu_id}',
+            f'get_submenus:{menu_id}',
+            'get_menus'
         )
         return result
 

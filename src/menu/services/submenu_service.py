@@ -40,7 +40,11 @@ class SubmenuService:
         """
 
         result: SubmenuModel = await self.submenu_repository.create_submenu(menu_id, submenu_create)
-        await self.cache_service.delete_cache(f'/api/v1/menus/{menu_id}', f'get_submenus:{menu_id}')
+        await self.cache_service.delete_cache(
+            f'/api/v1/menus/{menu_id}',
+            f'get_submenus:{menu_id}',
+            'get_menus'
+        )
 
         return result
 
