@@ -6,9 +6,14 @@ from src.menu.tests.conftest import remove_environment_variable, set_env_variabl
 from src.menu.tests.utils import reverse
 
 
-async def test_create_dish(client: AsyncClient, menu_data: dict, submenu_data: dict, dish_data: dict) -> None:
+async def test_create_dish(
+        client: AsyncClient,
+        menu_data: dict[str, str],
+        submenu_data: dict[str, str],
+        dish_data: dict[str, str]
+) -> None:
     menu_response: Response = await client.post(reverse('create_menu'), json=menu_data)
-    menu_response_json: dict = menu_response.json()
+    menu_response_json: dict[str, str] = menu_response.json()
 
     submenu_response: Response = await client.post(
         reverse(
@@ -16,7 +21,7 @@ async def test_create_dish(client: AsyncClient, menu_data: dict, submenu_data: d
             menu_response_json['id']),
         json=submenu_data
     )
-    submenu_response_json: dict = submenu_response.json()
+    submenu_response_json: dict[str, str] = submenu_response.json()
 
     response: Response = await client.post(
         reverse(
@@ -25,7 +30,7 @@ async def test_create_dish(client: AsyncClient, menu_data: dict, submenu_data: d
             submenu_response_json['id']),
         json=dish_data
     )
-    response_json: dict = response.json()
+    response_json: dict[str, str | float] = response.json()
 
     assert response.status_code == 201
     assert 'id' in response_json
@@ -35,12 +40,17 @@ async def test_create_dish(client: AsyncClient, menu_data: dict, submenu_data: d
 
     set_env_variable('menu_id', menu_response_json['id'])
     set_env_variable('submenu_id', submenu_response_json['id'])
-    set_env_variable('dish_id', response_json['id'])
+    set_env_variable('dish_id', str(response_json['id']))
 
 
-async def test_get_dishes(client: AsyncClient, dish_data: dict, menu_id: str, submenu_id: str) -> None:
+async def test_get_dishes(
+        client: AsyncClient,
+        dish_data: dict[str, str],
+        menu_id: str,
+        submenu_id: str
+) -> None:
     response: Response = await client.get(reverse('get_dishes', menu_id, submenu_id))
-    response_json: dict = response.json()
+    response_json: list[dict[str, str | float]] = response.json()
 
     assert response.status_code == 200
     assert 'id' in response_json[0]
@@ -51,13 +61,13 @@ async def test_get_dishes(client: AsyncClient, dish_data: dict, menu_id: str, su
 
 async def test_get_dish(
         client: AsyncClient,
-        submenu_data: dict,
+        submenu_data: dict[str, str],
         menu_id: str,
         submenu_id: str,
         dish_id: str
 ) -> None:
     response: Response = await client.get(reverse('get_dish', menu_id, submenu_id, dish_id))
-    response_json: dict = response.json()
+    response_json: dict[str, str | float] = response.json()
 
     assert response.status_code == 200
     assert 'id' in response_json
@@ -68,7 +78,7 @@ async def test_get_dish(
 
 async def test_patch_dish(
         client: AsyncClient,
-        dish_update_data: dict,
+        dish_update_data: dict[str, str],
         menu_id: str,
         submenu_id: str,
         dish_id: str
@@ -81,7 +91,7 @@ async def test_patch_dish(
             dish_id),
         json=dish_update_data
     )
-    response_json: dict = response.json()
+    response_json: dict[str, str | float] = response.json()
 
     assert response.status_code == 200
     assert response_json['title'] == dish_update_data['title']
@@ -91,7 +101,7 @@ async def test_patch_dish(
 
 async def test_patch_dish_invalid_id(
         client: AsyncClient,
-        dish_update_data: dict,
+        dish_update_data: dict[str, str],
         menu_id: str,
         submenu_id: str
 ) -> None:

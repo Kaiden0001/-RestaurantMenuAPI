@@ -10,7 +10,7 @@ from src.main import app
 
 
 @pytest.fixture
-def menu_data() -> dict:
+def menu_data() -> dict[str, str]:
     """
     Фикстура предоставляет образец данных для меню в виде словаря.
 
@@ -23,7 +23,7 @@ def menu_data() -> dict:
 
 
 @pytest.fixture
-def menu_update_data() -> dict:
+def menu_update_data() -> dict[str, str]:
     """
     Фикстура предоставляет образец данных для обновления меню в виде словаря.
 
@@ -36,7 +36,7 @@ def menu_update_data() -> dict:
 
 
 @pytest.fixture
-def submenu_data() -> dict:
+def submenu_data() -> dict[str, str]:
     """
     Фикстура предоставляет образец данных для подменю в виде словаря.
 
@@ -49,7 +49,7 @@ def submenu_data() -> dict:
 
 
 @pytest.fixture
-def submenu_update_data() -> dict:
+def submenu_update_data() -> dict[str, str]:
     """
     Фикстура предоставляет образец данных для обновления подменю в виде словаря.
 
@@ -62,7 +62,7 @@ def submenu_update_data() -> dict:
 
 
 @pytest.fixture
-def dish_data() -> dict:
+def dish_data() -> dict[str, str]:
     """
     Фикстура предоставляет образец данных для блюда в виде словаря.
 
@@ -77,7 +77,7 @@ def dish_data() -> dict:
 
 
 @pytest.fixture
-def dish_update_data() -> dict:
+def dish_update_data() -> dict[str, str]:
     """
     Фикстура предоставляет образец данных для обновления блюда в виде словаря.
 

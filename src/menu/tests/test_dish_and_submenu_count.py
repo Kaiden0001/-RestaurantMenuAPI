@@ -4,9 +4,9 @@ from src.menu.tests.conftest import remove_environment_variable, set_env_variabl
 from src.menu.tests.utils import reverse
 
 
-async def test_create_menu(client: AsyncClient, menu_data: dict) -> None:
+async def test_create_menu(client: AsyncClient, menu_data: dict[str, str]) -> None:
     response: Response = await client.post(reverse('create_menu'), json=menu_data)
-    response_json: dict = response.json()
+    response_json: dict[str, str] = response.json()
 
     assert response.status_code == 201
     assert 'id' in response_json
@@ -14,9 +14,9 @@ async def test_create_menu(client: AsyncClient, menu_data: dict) -> None:
     set_env_variable('menu_id', response_json['id'])
 
 
-async def test_create_submenu(client: AsyncClient, submenu_data: dict, menu_id: str) -> None:
+async def test_create_submenu(client: AsyncClient, submenu_data: dict[str, str], menu_id: str) -> None:
     response: Response = await client.post(reverse('create_submenu', menu_id), json=submenu_data)
-    response_json: dict = response.json()
+    response_json: dict[str, str] = response.json()
 
     assert response.status_code == 201
     assert 'id' in response_json
@@ -24,15 +24,25 @@ async def test_create_submenu(client: AsyncClient, submenu_data: dict, menu_id: 
     set_env_variable('submenu_id', response_json['id'])
 
 
-async def test_create_dish_one(client: AsyncClient, dish_data: dict, menu_id: str, submenu_id: str) -> None:
+async def test_create_dish_one(
+        client: AsyncClient,
+        dish_data: dict[str, str],
+        menu_id: str,
+        submenu_id: str
+) -> None:
     response: Response = await client.post(reverse('create_dish', menu_id, submenu_id), json=dish_data)
-    response_json: dict = response.json()
+    response_json: dict[str, str | float] = response.json()
 
     assert response.status_code == 201
     assert 'id' in response_json
 
 
-async def test_create_dish_two(client: AsyncClient, dish_update_data: dict, menu_id: str, submenu_id: str) -> None:
+async def test_create_dish_two(
+        client: AsyncClient,
+        dish_update_data: dict[str, str],
+        menu_id: str,
+        submenu_id: str
+) -> None:
     response: Response = await client.post(
         reverse(
             'create_dish',
@@ -40,7 +50,7 @@ async def test_create_dish_two(client: AsyncClient, dish_update_data: dict, menu
             submenu_id),
         json=dish_update_data
     )
-    response_json: dict = response.json()
+    response_json: dict[str, str | float] = response.json()
 
     assert response.status_code == 201
     assert 'id' in response_json
@@ -48,7 +58,7 @@ async def test_create_dish_two(client: AsyncClient, dish_update_data: dict, menu
 
 async def test_get_menu(client: AsyncClient, menu_id: str) -> None:
     response: Response = await client.get(reverse('get_menu', menu_id))
-    response_json: dict = response.json()
+    response_json: dict[str, str | int] = response.json()
 
     assert response.status_code == 200
     assert 'id' in response_json
@@ -58,7 +68,7 @@ async def test_get_menu(client: AsyncClient, menu_id: str) -> None:
 
 async def test_get_submenu(client: AsyncClient, menu_id: str, submenu_id: str) -> None:
     response: Response = await client.get(reverse('get_submenu', menu_id, submenu_id))
-    response_json: dict = response.json()
+    response_json: dict[str, str | int] = response.json()
 
     assert response.status_code == 200
     assert 'id' in response_json
@@ -73,7 +83,7 @@ async def test_delete_submenu(client: AsyncClient, menu_id: str, submenu_id: str
 
 async def test_get_submenus(client: AsyncClient, menu_id: str) -> None:
     response: Response = await client.get(reverse('get_submenus', menu_id))
-    response_json: dict = response.json()
+    response_json: list[dict[str, str]] = response.json()
 
     assert response.status_code == 200
     assert len(response_json) == 0
@@ -81,7 +91,7 @@ async def test_get_submenus(client: AsyncClient, menu_id: str) -> None:
 
 async def test_get_dishes(client: AsyncClient, menu_id: str, submenu_id: str) -> None:
     response: Response = await client.get(reverse('get_dishes', menu_id, submenu_id))
-    response_json: dict = response.json()
+    response_json: list[dict[str, str | float]] = response.json()
 
     assert response.status_code == 200
     assert len(response_json) == 0
@@ -89,7 +99,7 @@ async def test_get_dishes(client: AsyncClient, menu_id: str, submenu_id: str) ->
 
 async def test_get_menu_two(client: AsyncClient, menu_id: str) -> None:
     response: Response = await client.get(reverse('get_menu', menu_id))
-    response_json: dict = response.json()
+    response_json: dict[str, str] = response.json()
 
     assert response.status_code == 200
     assert 'id' in response_json
@@ -105,7 +115,7 @@ async def test_delete_menu(client: AsyncClient, menu_id: str) -> None:
 
 async def test_get_menus(client: AsyncClient) -> None:
     response: Response = await client.get(reverse('get_menus'))
-    response_json: dict = response.json()
+    response_json: list[dict[str, str]] = response.json()
 
     assert response.status_code == 200
     assert len(response_json) == 0

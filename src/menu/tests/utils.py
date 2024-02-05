@@ -3,7 +3,7 @@ import re
 from src.main import app
 
 
-def _replace_path_params(url_path: str, replacements: dict) -> str:
+def _replace_path_params(url_path: str, replacements: dict[str, str]) -> str:
     """
     Заменяет параметры в пути URL значениями из словаря replacements.
 
