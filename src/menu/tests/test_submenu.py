@@ -11,7 +11,12 @@ async def test_create_submenu(client: AsyncClient, menu_data: dict, submenu_data
     menu_response_json: dict = menu_response.json()
 
     submenu_data['menu_id'] = menu_response_json['id']
-    response: Response = await client.post(reverse('create_submenu', menu_response_json['id']), json=submenu_data)
+    response: Response = await client.post(
+        reverse(
+            'create_submenu',
+            menu_response_json['id']),
+        json=submenu_data
+    )
     response_json: dict = response.json()
 
     assert response.status_code == 201
@@ -54,7 +59,13 @@ async def test_get_submenu_invalid_id(client: AsyncClient, submenu_data: dict, m
 
 
 async def test_patch_submenu(client: AsyncClient, submenu_update_data: dict, menu_id: str, submenu_id: str) -> None:
-    response: Response = await client.patch(reverse('update_submenu', menu_id, submenu_id), json=submenu_update_data)
+    response: Response = await client.patch(
+        reverse(
+            'update_submenu',
+            menu_id,
+            submenu_id),
+        json=submenu_update_data
+    )
     response_json: dict = response.json()
 
     assert response.status_code == 200
@@ -64,7 +75,13 @@ async def test_patch_submenu(client: AsyncClient, submenu_update_data: dict, men
 
 
 async def test_patch_submenu_invalid_id(client: AsyncClient, submenu_update_data: dict, menu_id: str) -> None:
-    response: Response = await client.patch(reverse('update_submenu', menu_id, uuid.uuid4()), json=submenu_update_data)
+    response: Response = await client.patch(
+        reverse(
+            'update_submenu',
+            menu_id,
+            uuid.uuid4()),
+        json=submenu_update_data
+    )
 
     assert response.status_code == 404
 

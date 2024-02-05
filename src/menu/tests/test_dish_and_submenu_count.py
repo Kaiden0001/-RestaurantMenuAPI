@@ -33,7 +33,13 @@ async def test_create_dish_one(client: AsyncClient, dish_data: dict, menu_id: st
 
 
 async def test_create_dish_two(client: AsyncClient, dish_update_data: dict, menu_id: str, submenu_id: str) -> None:
-    response: Response = await client.post(reverse('create_dish', menu_id, submenu_id), json=dish_update_data)
+    response: Response = await client.post(
+        reverse(
+            'create_dish',
+            menu_id,
+            submenu_id),
+        json=dish_update_data
+    )
     response_json: dict = response.json()
 
     assert response.status_code == 201

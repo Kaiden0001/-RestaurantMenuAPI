@@ -65,7 +65,13 @@ class DishService:
         )
         return result
 
-    async def update_dish(self, menu_id: UUID, submenu_id: UUID, dish_id: UUID, dish_update: DishUpdate) -> DishModel:
+    async def update_dish(
+            self,
+            menu_id: UUID,
+            submenu_id: UUID,
+            dish_id: UUID,
+            dish_update: DishUpdate
+    ) -> DishModel:
         """
         Обновить информацию о блюде.
 
@@ -92,5 +98,10 @@ class DishService:
         :return: Модель удаленного блюда.
         """
         result: DishModel = await self.dish_repository.delete_dish(dish_id)
-        await self.cache_service.delete_related_cache('dish', menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)
+        await self.cache_service.delete_related_cache(
+            'dish',
+            menu_id=menu_id,
+            submenu_id=submenu_id,
+            dish_id=dish_id
+        )
         return result

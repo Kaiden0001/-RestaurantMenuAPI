@@ -6,7 +6,7 @@ from aioredis import Redis
 
 class CacheService:
     def __init__(self, redis: Redis):
-        self.redis = redis
+        self.redis: Redis = redis
 
     async def get_cache(self, cache_key: str) -> Any | None:
         """
@@ -50,8 +50,8 @@ class CacheService:
         :param service: Тип сервиса ('menu', 'submenu' или 'dish').
         :param kwargs: Параметры для определения сущности (menu_id, submenu_id, dish_id).
         """
-        caches_to_delete: list = []
-        patterns: list = []
+        caches_to_delete: list[str] = []
+        patterns: list[str] = []
         cache_template: str = ''
 
         match service:

@@ -18,10 +18,8 @@ class Submenu(Base):
     menu_id: UUID4 = Column(UUID, ForeignKey('menu.id', ondelete='CASCADE'),
                             nullable=False)
 
-    menu: Mapped[list['Menu']] = relationship('Menu',
-                                              back_populates='submenus')
-    dishes: Mapped[list['Dish']] = relationship('Dish',
-                                                back_populates='submenu')
+    menu: Mapped[list['Menu']] = relationship('Menu', back_populates='submenus')
+    dishes: Mapped[list['Dish']] = relationship('Dish', back_populates='submenu')
 
 
 class SubmenuModel(BaseModel):
