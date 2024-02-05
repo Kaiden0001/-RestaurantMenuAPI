@@ -13,6 +13,13 @@ from src.menu.schemas.submenu_schema import SubmenuCreate, SubmenuUpdate
 class SubmenuRepository(BaseRepository):
 
     async def _get_submenu_query(self, menu_id: UUID, submenu_id: UUID | None = None) -> Result:
+        """
+        Возвращает запрос для получения подробной информации о подменю или всех подменю для конкретного меню.
+
+        :param menu_id: Уникальный идентификатор меню.
+        :param submenu_id: (Опционально) Уникальный идентификатор подменю.
+        :return: Результат выполнения запроса SQLAlchemy.
+        """
         submenu_query: Select = select(
             Submenu.id,
             Submenu.title,
@@ -30,6 +37,13 @@ class SubmenuRepository(BaseRepository):
 
     @staticmethod
     def _create_submenu_detail_model(submenu: Any, menu_id: UUID) -> SubmenuDetailModel:
+        """
+        Создает модель данных SubmenuDetailModel на основе результата запроса к подменю.
+
+        :param submenu: Результат запроса к подменю.
+        :param menu_id: Уникальный идентификатор меню.
+        :return: Модель данных SubmenuDetailModel.
+        """
         return SubmenuDetailModel(
             id=submenu.id,
             title=submenu.title,
@@ -80,28 +94,13 @@ class SubmenuRepository(BaseRepository):
         :return: Модель данных SubmenuDetailModel.
         :raise HTTPException: Исключение с кодом 404, если подменю не найдено.
         """
-        submenu_query: Select = select(
-            Submenu.id,
-            Submenu.title,
-            Submenu.description,
-            func.count(Dish.id).label('dish_count')
-        ).select_from(Submenu). \
-            outerjoin(Dish, Submenu.id == Dish.submenu_id). \
-            where(Submenu.menu_id == menu_id, Submenu.id == submenu_id).group_by(Submenu.id)
-
-        result_submenu: Result = await self.session.execute(submenu_query)
+        result_submenu: Result = await self._get_submenu_query(menu_id, submenu_id)
         submenu: Any = result_submenu.first()
 
         if not submenu:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='submenu not found')
 
-        submenu_detail: SubmenuDetailModel = SubmenuDetailModel(
-            id=submenu.id,
-            title=submenu.title,
-            menu_id=menu_id,
-            description=submenu.description,
-            dishes_count=int(submenu.dish_count) if submenu.dish_count is not None else 0
-        )
+        submenu_detail: SubmenuDetailModel = self._create_submenu_detail_model(submenu, menu_id)
 
         return submenu_detail
 
