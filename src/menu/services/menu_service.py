@@ -3,6 +3,7 @@ from uuid import UUID
 from aioredis import Redis
 
 from src.menu.models.menu_model import MenuDetailModel, MenuModel
+from src.menu.models.models_for_full_menu import AllMenuModel
 from src.menu.repositories.menu_repository import MenuRepository
 from src.menu.schemas.menu_schema import MenuCreate, MenuUpdate
 from src.menu.services.cache_service import CacheService
@@ -26,6 +27,21 @@ class MenuService:
         result: list[MenuDetailModel] = await self.menu_repository.get_menus()
 
         await self.cache_service.set_cache(cache_key='get_menus', result=result)
+        return result
+
+    async def get_full_menu(self) -> list[AllMenuModel]:
+        """
+        Получение полного меню вместе со всеми подменю и блюдами.
+
+        :return: Список моделей данных AllMenuModel.
+        """
+        result_cache: list[AllMenuModel] | None = await self.cache_service.get_cache('get_full_menu')
+        if result_cache:
+            return result_cache
+
+        result = await self.menu_repository.get_full_menu()
+
+        await self.cache_service.set_cache(cache_key='get_full_menu', result=result)
         return result
 
     async def create_menu(self, menu_create: MenuCreate) -> MenuModel:

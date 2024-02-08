@@ -39,6 +39,41 @@ async def test_get_menu_detail(client: AsyncClient, menu_data: dict[str, str], m
     assert response_json['dishes_count'] == 0
 
 
+async def test_get_full_menu(
+        client: AsyncClient,
+        submenu_data: dict[str, str],
+        menu_id: str,
+        menu_data: dict[str, str],
+        dish_data: dict[str, str]
+) -> None:
+    response_submenu: Response = await client.post(
+        reverse(
+            'create_submenu',
+            menu_id),
+        json=submenu_data
+    )
+    response_submenu_json: dict[str, str] = response_submenu.json()
+    await client.post(
+        reverse(
+            'create_dish',
+            menu_id,
+            response_submenu_json['id']
+        ), json=dish_data
+    )
+    response: Response = await client.get(reverse('get_full_menu'))
+    response_json: list[dict] = response.json()
+
+    assert response_json[0]['menu']['title'] == menu_data['title']
+    assert response_json[0]['menu']['description'] == menu_data['description']
+
+    assert response_json[0]['menu']['submenus'][0]['title'] == submenu_data['title']
+    assert response_json[0]['menu']['submenus'][0]['description'] == submenu_data['description']
+
+    assert response_json[0]['menu']['submenus'][0]['dishes'][0]['title'] == dish_data['title']
+    assert response_json[0]['menu']['submenus'][0]['dishes'][0]['description'] == dish_data['description']
+    assert response_json[0]['menu']['submenus'][0]['dishes'][0]['price'] == dish_data['price']
+
+
 async def test_get_menu_invalid_id(client: AsyncClient) -> None:
     response: Response = await client.get(reverse('get_menu', uuid.uuid4()))
 

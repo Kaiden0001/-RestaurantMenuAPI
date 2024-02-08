@@ -3,9 +3,16 @@ from uuid import UUID
 
 from fastapi import HTTPException, status
 from sqlalchemy import Delete, Result, Select, Update, delete, func, select, update
+from sqlalchemy.orm import selectinload
 
 from src.menu.models.dish_model import Dish
 from src.menu.models.menu_model import Menu, MenuDetailModel, MenuModel
+from src.menu.models.models_for_full_menu import (
+    AllMenuModel,
+    DishInfo,
+    MenuInfo,
+    SubmenuInfo,
+)
 from src.menu.models.submenu_model import Submenu
 from src.menu.repositories.base_repository import BaseRepository
 from src.menu.schemas.menu_schema import MenuCreate, MenuUpdate
@@ -102,6 +109,46 @@ class MenuRepository(BaseRepository):
         await self.session.refresh(db_menu)
 
         return db_menu
+
+    async def get_full_menu(self) -> list[AllMenuModel]:
+        menu_query: Select = (
+            select(Menu)
+            .options(
+                selectinload(Menu.submenus)
+                .selectinload(Submenu.dishes)
+            )
+        )
+        result: Result = await self.session.execute(menu_query)
+        menus = result.scalars().all()
+
+        result_all: list[AllMenuModel] = [
+            AllMenuModel(
+                menu=MenuInfo(
+                    id=menu.id,
+                    title=menu.title,
+                    description=menu.description,
+                    submenus=[
+                        SubmenuInfo(
+                            id=submenu.id,
+                            title=submenu.title,
+                            description=submenu.description,
+                            dishes=[
+                                DishInfo(
+                                    id=dish.id,
+                                    title=dish.title,
+                                    description=dish.description,
+                                    price=dish.price
+                                )
+                                for dish in submenu.dishes
+                            ]
+                        )
+                        for submenu in menu.submenus
+                    ]
+                )
+            )
+            for menu in menus
+        ]
+        return result_all
 
     async def update_menu(self, menu_id: UUID, menu_update: MenuUpdate) -> MenuModel:
         """

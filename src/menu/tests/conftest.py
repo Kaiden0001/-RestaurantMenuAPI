@@ -71,8 +71,7 @@ def dish_data() -> dict[str, str]:
     return {
         'title': 'Title',
         'description': 'Description',
-        'price': '5.20',
-        'submenu_id': 'ebae19d0-8cda-4f55-902b-e3d6a0bd6747'
+        'price': '5.20'
     }
 
 

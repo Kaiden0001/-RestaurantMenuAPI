@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Request, status
 
 from src.menu.api.dependencies import get_menu_service
 from src.menu.models.menu_model import MenuDetailModel, MenuModel
+from src.menu.models.models_for_full_menu import AllMenuModel
 from src.menu.schemas.menu_schema import MenuCreate, MenuUpdate
 from src.menu.services.menu_service import MenuService
 
@@ -27,6 +28,22 @@ async def get_menus(
     :return: Список моделей меню.
     """
     return await menu_service.get_menus()
+
+
+@router.get(
+    '/menus/full',
+    response_model=list[AllMenuModel]
+)
+async def get_full_menu(
+        menu_service: MenuService = Depends(get_menu_service)
+) -> list[AllMenuModel]:
+    """
+    Получение полное меню.
+
+    :param menu_service: Сервис для работы с меню (внедрение зависимости).
+    :return: Список моделей полного меню.
+    """
+    return await menu_service.get_full_menu()
 
 
 @router.post(

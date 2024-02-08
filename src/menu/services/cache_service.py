@@ -41,7 +41,7 @@ class CacheService:
 
         :param args: Переменное количество ключей кэша.
         """
-        await self.redis.unlink(*args)
+        await self.redis.unlink(*args, 'get_full_menu')
 
     async def delete_related_cache(self, service: str, **kwargs) -> None:
         """
@@ -93,7 +93,7 @@ class CacheService:
                     ]
                 )
 
-        caches_to_delete.append(cache_template)
+        caches_to_delete.extend([cache_template, 'get_full_menu'])
 
         for pattern in patterns:
             result: Any = await self.redis.scan(match=pattern)
