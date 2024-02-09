@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from aioredis import Redis
+from fastapi import BackgroundTasks
 
 from src.menu.models.submenu_model import SubmenuDetailModel, SubmenuModel
 from src.menu.repositories.submenu_repository import SubmenuRepository
@@ -9,9 +10,10 @@ from src.menu.services.cache_service import CacheService
 
 
 class SubmenuService:
-    def __init__(self, submenu_repository: SubmenuRepository, redis: Redis):
+    def __init__(self, submenu_repository: SubmenuRepository, redis: Redis, background_tasks: BackgroundTasks):
         self.submenu_repository = submenu_repository
         self.cache_service: CacheService = CacheService(redis)
+        self.background_tasks: BackgroundTasks = background_tasks
 
     async def get_submenus(self, menu_id: UUID) -> list[SubmenuDetailModel]:
         """
@@ -40,7 +42,8 @@ class SubmenuService:
         """
 
         result: SubmenuModel = await self.submenu_repository.create_submenu(menu_id, submenu_create)
-        await self.cache_service.delete_cache(
+        self.background_tasks.add_task(
+            self.cache_service.delete_cache,
             f'/api/v1/menus/{menu_id}',
             f'get_submenus:{menu_id}',
             'get_menus'
@@ -84,7 +87,11 @@ class SubmenuService:
         :return: Модель обновленного подменю.
         """
         result: SubmenuModel = await self.submenu_repository.update_submenu(menu_id, submenu_id, submenu_update)
-        await self.cache_service.delete_cache(url, f'get_submenus:{menu_id}')
+        self.background_tasks.add_task(
+            self.cache_service.delete_cache,
+            url,
+            f'get_submenus:{menu_id}'
+        )
 
         return result
 
@@ -97,6 +104,11 @@ class SubmenuService:
         :return: Модель удаленного подменю
         """
         result: SubmenuModel = await self.submenu_repository.delete_submenu(menu_id, submenu_id)
-        await self.cache_service.delete_related_cache('submenu', menu_id=menu_id, submenu_id=submenu_id)
+        self.background_tasks.add_task(
+            self.cache_service.delete_related_cache,
+            service='submenu',
+            menu_id=menu_id,
+            submenu_id=submenu_id
+        )
 
         return result

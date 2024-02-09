@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from aioredis import Redis
+from fastapi import BackgroundTasks
 
 from src.menu.models.menu_model import MenuDetailModel, MenuModel
 from src.menu.models.models_for_full_menu import AllMenuModel
@@ -10,9 +11,10 @@ from src.menu.services.cache_service import CacheService
 
 
 class MenuService:
-    def __init__(self, menu_repository: MenuRepository, redis: Redis):
+    def __init__(self, menu_repository: MenuRepository, redis: Redis, background_tasks: BackgroundTasks):
         self.menu_repository = menu_repository
         self.cache_service: CacheService = CacheService(redis)
+        self.background_tasks: BackgroundTasks = background_tasks
 
     async def get_menus(self) -> list[MenuDetailModel]:
         """
@@ -51,7 +53,7 @@ class MenuService:
         :param menu_create: Данные для создания меню.
         :return: Модель созданного меню.
         """
-        await self.cache_service.delete_cache('get_menus')
+        self.background_tasks.add_task(self.cache_service.delete_cache, 'get_menus')
         return await self.menu_repository.create_menu(menu_create)
 
     async def get_menu(self, url: str, menu_id: UUID) -> MenuDetailModel:
@@ -81,7 +83,7 @@ class MenuService:
         :param menu_update: Схема данных для обновления информации о меню.
         :return: Модель обновленного меню.
         """
-        await self.cache_service.delete_cache('get_menus', url)
+        self.background_tasks.add_task(self.cache_service.delete_cache, 'get_menus', url)
         return await self.menu_repository.update_menu(menu_id, menu_update)
 
     async def delete_menu(self, menu_id: UUID) -> MenuModel:
@@ -91,5 +93,5 @@ class MenuService:
         :param menu_id: Идентификатор меню, которое нужно удалить.
         :return: Модель удаленного меню.
         """
-        await self.cache_service.delete_related_cache(service='menu', menu_id=menu_id)
+        self.background_tasks.add_task(self.cache_service.delete_related_cache, service='menu', menu_id=menu_id)
         return await self.menu_repository.delete_menu(menu_id)

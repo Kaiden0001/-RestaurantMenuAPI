@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from aioredis import Redis
+from fastapi import BackgroundTasks
 
 from src.menu.models.dish_model import DishModel
 from src.menu.repositories.dish_repository import DishRepository
@@ -9,9 +10,10 @@ from src.menu.services.cache_service import CacheService
 
 
 class DishService:
-    def __init__(self, dish_repository: DishRepository, redis: Redis):
+    def __init__(self, dish_repository: DishRepository, redis: Redis, background_tasks: BackgroundTasks):
         self.dish_repository = dish_repository
         self.cache_service: CacheService = CacheService(redis)
+        self.background_tasks: BackgroundTasks = background_tasks
 
     async def get_dishes(self, menu_id: UUID, submenu_id: UUID) -> list[DishModel]:
         """
@@ -58,7 +60,8 @@ class DishService:
         :return: Модель созданного блюда.
         """
         result: DishModel = await self.dish_repository.create_dish(submenu_id, dish_update)
-        await self.cache_service.delete_cache(
+        self.background_tasks.add_task(
+            self.cache_service.delete_cache,
             f'/api/v1/menus/{menu_id}',
             f'/api/v1/menus/{menu_id}/submenus/{submenu_id}',
             f'get_dishes:{menu_id}:{submenu_id}',
@@ -84,7 +87,8 @@ class DishService:
         :return: Модель обновленного блюда.
         """
         result: DishModel = await self.dish_repository.update_dish(dish_id, dish_update)
-        await self.cache_service.delete_cache(
+        self.background_tasks.add_task(
+            self.cache_service.delete_cache,
             f'get_dishes:{menu_id}:{submenu_id}',
             f'/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}'
         )
@@ -100,7 +104,8 @@ class DishService:
         :return: Модель удаленного блюда.
         """
         result: DishModel = await self.dish_repository.delete_dish(dish_id)
-        await self.cache_service.delete_related_cache(
+        self.background_tasks.add_task(
+            self.cache_service.delete_related_cache,
             'dish',
             menu_id=menu_id,
             submenu_id=submenu_id,
