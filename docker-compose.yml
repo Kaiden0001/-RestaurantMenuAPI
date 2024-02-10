@@ -19,6 +19,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+      rabbitmq:
+        condition: service_healthy
 
   db:
     image: postgres:15.1-alpine
@@ -38,8 +40,32 @@ services:
   redis:
     image: redis:7-alpine
     restart: always
-    ports:
-      - "6666:6379"
+
+  rabbitmq:
+    image: rabbitmq:3.13-rc-alpine
+    restart: always
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  celery_worker:
+    build: .
+    restart: always
+    command: "celery -A src.menu.worker.celery_app worker"
+    depends_on:
+      web:
+        condition: service_started
+
+  celery_beat:
+    build: .
+    restart: always
+    command: "celery -A src.menu.worker.celery_app beat"
+    depends_on:
+      celery_worker:
+        condition: service_started
 
 volumes:
   postgres_data:

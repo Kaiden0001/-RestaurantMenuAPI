@@ -15,12 +15,17 @@ from src.config import (
     DB_PASS,
     DB_PORT,
     DB_USER,
+    RABBITMQ_HOST,
+    RABBITMQ_PASSWORD,
+    RABBITMQ_PORT,
+    RABBITMQ_USERNAME,
     REDIS_HOST,
     REDIS_PORT,
 )
 
 DATABASE_URL: str = f'postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 REDIS_URL: str = f'redis://{REDIS_HOST}:{REDIS_PORT}'
+RABBITMQ_URL: str = f'amqp://{RABBITMQ_USERNAME}:{RABBITMQ_PASSWORD}@{RABBITMQ_HOST}:{RABBITMQ_PORT}'
 
 Base: DeclarativeMeta = declarative_base()
 
