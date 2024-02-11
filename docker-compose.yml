@@ -54,6 +54,8 @@ services:
   celery_worker:
     build: .
     restart: always
+    volumes:
+      - ./:/app/
     command: "celery -A src.menu.worker.celery_app worker"
     depends_on:
       web:
@@ -62,6 +64,8 @@ services:
   celery_beat:
     build: .
     restart: always
+    volumes:
+      - ./:/app/
     command: "celery -A src.menu.worker.celery_app beat"
     depends_on:
       celery_worker:

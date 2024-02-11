@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
@@ -17,3 +18,7 @@ RABBITMQ_HOST: str | None = os.environ.get('RABBITMQ_HOST')
 RABBITMQ_USERNAME: str | None = os.environ.get('RABBITMQ_USERNAME')
 RABBITMQ_PASSWORD: str | None = os.environ.get('RABBITMQ_PASSWORD')
 RABBITMQ_PORT: str | None = os.environ.get('RABBITMQ_PORT')
+
+SPREADSHEET_URL: str | None = os.environ.get('SPREADSHEET_URL')
+
+BASE_DIR: Path = Path(__file__).parent.parent

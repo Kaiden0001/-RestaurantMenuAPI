@@ -18,7 +18,7 @@ celery_app.conf.update(
 
 celery_app.conf.beat_schedule = {
     'sync_excel_to_db': {
-        'task': 'src.menu.worker.tasks.excel_sync_task.test_celery',
+        'task': 'src.menu.worker.tasks.excel_sync_task.sync_excel_to_db',
         'schedule': 15.0,
     },
 }
