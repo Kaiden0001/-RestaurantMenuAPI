@@ -72,7 +72,7 @@ class DishRepository(BaseRepository):
 
         return db_dish
 
-    async def delete_dish(self, dish_id: UUID) -> DishModel:
+    async def delete_dish(self, dish_id: UUID | str) -> DishModel:
         """
         Удаление блюда по его уникальному идентификатору.
 

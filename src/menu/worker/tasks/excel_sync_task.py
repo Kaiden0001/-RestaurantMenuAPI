@@ -1,30 +1,21 @@
-import gspread
-from gspread import Client, Spreadsheet
+import asyncio
 
-from src.config import BASE_DIR, SPREADSHEET_URL
+from aioredis import from_url
+
+from src.database import REDIS_URL, async_session_maker
+from src.menu.services.sheet_service import SheetService
 from src.menu.worker.celery_app import celery_app
-from src.menu.worker.tasks.utils.check_data import (
-    check_dish_data,
-    check_menu_data,
-    check_submenu_data,
-    delete_dishes,
-    delete_menus,
-    delete_submenus,
-)
-from src.menu.worker.tasks.utils.menu_parser import get_full_menu
-from src.menu.worker.tasks.utils.parse_sheet import parse_sheet
 
 
-def get_values() -> list[list]:
-    """
-    Получает данные из Google Sheets.
-
-    :return: Список списков значений из листа таблицы.
-    """
-    client: Client = gspread.service_account(BASE_DIR / 'service_account.json')
-    sh: Spreadsheet = client.open_by_url(SPREADSHEET_URL)
-    values: list[list] = sh.sheet1.get_all_values()
-    return values
+async def sync_db_sheet():
+    async with async_session_maker() as session:
+        try:
+            redis = from_url(REDIS_URL)
+            sheet_service = SheetService(redis, session)
+            await sheet_service.check_data()
+            print('SYNC')
+        except IndexError as e:
+            print('Ошибка', e)
 
 
 @celery_app.task()
@@ -42,18 +33,9 @@ def sync_excel_to_db() -> None:
     :raises IndexError: Если произошла ошибка в структуре таблицы.
     """
     try:
-        values: list[list] = get_values()
-
-        menu_data_offline, submenu_data_offline, dish_data_offline = parse_sheet(values)
-        menu_data_online, submenu_data_online, dish_data_online = get_full_menu()
-
-        delete_dishes(dish_data_online, dish_data_offline)
-        delete_submenus(submenu_data_online, submenu_data_offline)
-        delete_menus(menu_data_online, menu_data_offline)
-
-        check_menu_data(menu_data_online, menu_data_offline)
-        check_submenu_data(submenu_data_online, submenu_data_offline)
-        check_dish_data(dish_data_online, dish_data_offline)
+        loop = asyncio.get_event_loop()
+        result = loop.run_until_complete(sync_db_sheet())
+        return result
     except FileNotFoundError:
         print('No such file')
     except IndexError:

@@ -1,3 +1,4 @@
+from typing import Any
 from uuid import UUID
 
 from aioredis import Redis
@@ -27,9 +28,18 @@ class DishService:
 
         result_cache: list[DishModel] | None = await self.cache_service.get_cache(cache_key)
         if result_cache:
+            for index, dish in enumerate(result_cache):
+                discount: Any = await self.cache_service.get_cache(f'dish:{dish.id}')
+                if discount:
+                    result_cache[index].price = discount
             return result_cache
 
         result: list[DishModel] = await self.dish_repository.get_dishes(submenu_id)
+        for index, dish in enumerate(result):
+            discount = await self.cache_service.get_cache(f'dish:{dish.id}')
+            if discount:
+                result[index].price = discount
+
         await self.cache_service.set_cache(cache_key=cache_key, result=result)
         return result
 
@@ -42,11 +52,15 @@ class DishService:
         :return: Модель блюда.
         """
         result_cache: DishModel | None = await self.cache_service.get_cache(url)
+        discount: Any | None = await self.cache_service.get_cache(f'dish:{dish_id}')
         if result_cache:
+            if discount:
+                result_cache.price = discount
             return result_cache
 
         result: DishModel = await self.dish_repository.get_dish(dish_id)
-
+        if discount:
+            result.price = discount
         await self.cache_service.set_cache(cache_key=url, result=result)
         return result
 

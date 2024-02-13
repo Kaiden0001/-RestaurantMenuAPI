@@ -40,6 +40,8 @@ services:
   redis:
     image: redis:7-alpine
     restart: always
+    ports:
+      - '6666:6379'
 
   rabbitmq:
     image: rabbitmq:3.13-rc-alpine

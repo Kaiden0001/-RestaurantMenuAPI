@@ -12,7 +12,7 @@ class BaseRepository:
     def __init__(self, session: AsyncSession):
         self.session: AsyncSession = session
 
-    async def get_menu_by_id(self, menu_id: UUID) -> MenuModel:
+    async def get_menu_by_id(self, menu_id: UUID | str) -> MenuModel:
         """
         Получение меню по его уникальному идентификатору.
 
@@ -34,7 +34,7 @@ class BaseRepository:
         result: Result = await self.session.execute(query)
         return result.scalar()
 
-    async def get_dish_by_id(self, dish_id: UUID) -> DishModel:
+    async def get_dish_by_id(self, dish_id: UUID | str) -> DishModel:
         """
         Получение блюда по его уникальному идентификатору.
 

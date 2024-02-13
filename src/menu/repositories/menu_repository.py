@@ -169,7 +169,7 @@ class MenuRepository(BaseRepository):
 
         return await self.get_menu_by_id(menu_id)
 
-    async def delete_menu(self, menu_id: UUID) -> MenuModel:
+    async def delete_menu(self, menu_id: UUID | str) -> MenuModel:
         """
         Удаление меню.
 
