@@ -38,6 +38,8 @@ async def get_dishes(
 )
 async def get_dish(
         request: Request,
+        menu_id: UUID,
+        submenu_id: UUID,
         dish_id: UUID,
         dish_service: DishService = Depends(get_dish_service)
 ) -> DishModel:

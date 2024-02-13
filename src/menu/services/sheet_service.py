@@ -178,8 +178,8 @@ class SheetService:
                 reverse('update_dish', dish[0], dish[1], dish[2]),
                 f'get_dishes:{dish[0]}:{dish[1]}'
             )
+            await self.cache_service.delete_cache(f'dish:{dish[2]}')
             if dish[4]:
-                await self.cache_service.delete_cache(f'dish:{dish[2]}')
                 await self.cache_service.set_cache(dish[4], f'dish:{dish[2]}', 99999999)
 
             await self.sheet_repository.update_dish(dish[2], dish[3])
@@ -195,8 +195,8 @@ class SheetService:
             )
             result: DishModel = await self.sheet_repository.create_dish(dish[1], dish[2])
 
+            await self.cache_service.delete_cache(f'dish:{result.id}')
             if dish[3]:
-                await self.cache_service.delete_cache(f'dish:{result.id}')
                 await self.cache_service.set_cache(dish[3], f'dish:{result.id}', 99999999)
 
     async def add_discount_to_dish_online(

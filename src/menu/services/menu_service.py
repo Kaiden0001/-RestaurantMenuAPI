@@ -1,10 +1,11 @@
+from typing import Any
 from uuid import UUID
 
 from aioredis import Redis
 from fastapi import BackgroundTasks
 
 from src.menu.models.menu_model import MenuDetailModel, MenuModel
-from src.menu.models.models_for_full_menu import AllMenuModel
+from src.menu.models.models_for_full_menu import AllMenuModel, MenuInfo
 from src.menu.repositories.menu_repository import MenuRepository
 from src.menu.schemas.menu_schema import MenuCreate, MenuUpdate
 from src.menu.services.cache_service import CacheService
@@ -41,10 +42,18 @@ class MenuService:
         if result_cache:
             return result_cache
 
-        result = await self.menu_repository.get_full_menu()
+        results = await self.menu_repository.get_full_menu()
 
-        await self.cache_service.set_cache(cache_key='get_full_menu', result=result)
-        return result
+        for result in results:
+            menu: MenuInfo = result.menu
+            for submenu in menu.submenus:
+                for dish in submenu.dishes:
+                    cache: Any | None = await self.cache_service.get_cache(f'dish:{dish.id}')
+                    if cache:
+                        dish.price = cache
+
+        await self.cache_service.set_cache(cache_key='get_full_menu', result=results)
+        return results
 
     async def create_menu(self, menu_create: MenuCreate) -> MenuModel:
         """
