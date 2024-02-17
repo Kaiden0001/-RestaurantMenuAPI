@@ -1,22 +1,26 @@
 import uuid
 from decimal import Decimal
+from typing import TYPE_CHECKING
 
 from pydantic import UUID4, BaseModel
-from sqlalchemy import UUID, Column, ForeignKey, Numeric, String
-from sqlalchemy.orm import Mapped, relationship
+from sqlalchemy import UUID, ForeignKey, Numeric
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.database import Base
+from src.menu.models.base import Base
+
+if TYPE_CHECKING:
+    from src.menu.models.submenu_model import Submenu
 
 
 class Dish(Base):
     """Модель базы данных для блюда."""
     __tablename__ = 'dish'
 
-    id: UUID4 = Column(UUID, primary_key=True, default=uuid.uuid4)
-    title: str = Column(String, nullable=False, unique=True)
-    description: str = Column(String, nullable=False)
-    price: float = Column(Numeric(precision=10, scale=2), nullable=False)
-    submenu_id: UUID4 = Column(UUID, ForeignKey('submenu.id', ondelete='CASCADE'), nullable=False)
+    id: Mapped[str] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
+    title: Mapped[str] = mapped_column(unique=True)
+    description: Mapped[str]
+    price: Mapped[float] = mapped_column(Numeric(precision=10, scale=2))
+    submenu_id: Mapped[str] = mapped_column(UUID, ForeignKey('submenu.id', ondelete='CASCADE'))
 
     submenu: Mapped[list['Submenu']] = relationship('Submenu', back_populates='dishes')
 
