@@ -1,4 +1,3 @@
-import uuid
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
@@ -16,7 +15,6 @@ class Dish(Base):
     """Модель базы данных для блюда."""
     __tablename__ = 'dish'
 
-    id: Mapped[str] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     title: Mapped[str] = mapped_column(unique=True)
     description: Mapped[str]
     price: Mapped[float] = mapped_column(Numeric(precision=10, scale=2))

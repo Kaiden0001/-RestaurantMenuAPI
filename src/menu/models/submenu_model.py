@@ -1,4 +1,3 @@
-import uuid
 from typing import TYPE_CHECKING
 
 from pydantic import UUID4, BaseModel
@@ -16,7 +15,6 @@ class Submenu(Base):
     """Модель базы данных для подменю."""
     __tablename__ = 'submenu'
 
-    id: Mapped[str] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     title: Mapped[str] = mapped_column(unique=True)
     description: Mapped[str]
     menu_id: Mapped[str] = mapped_column(UUID, ForeignKey('menu.id', ondelete='CASCADE'))
