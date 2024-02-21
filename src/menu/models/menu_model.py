@@ -1,20 +1,20 @@
-import uuid
+from typing import TYPE_CHECKING
 
 from pydantic import UUID4, BaseModel
-from sqlalchemy import UUID, Column, String
-from sqlalchemy.orm import Mapped, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.database import Base
-from src.menu.models.submenu_model import Submenu
+from src.menu.models.base import Base
+
+if TYPE_CHECKING:
+    from src.menu.models.submenu_model import Submenu
 
 
 class Menu(Base):
     """Модель базы данных для меню."""
     __tablename__ = 'menu'
 
-    id: UUID4 = Column(UUID, primary_key=True, default=uuid.uuid4)
-    title: str = Column(String, nullable=False, unique=True)
-    description: str = Column(String, nullable=False)
+    title: Mapped[str] = mapped_column(unique=True)
+    description: Mapped[str]
 
     submenus: Mapped[list['Submenu']] = relationship('Submenu', back_populates='menu')
 

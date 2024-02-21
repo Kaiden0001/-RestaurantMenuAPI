@@ -7,7 +7,6 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
-from sqlalchemy.orm import DeclarativeMeta, declarative_base
 
 from src.config import (
     DB_HOST,
@@ -26,8 +25,6 @@ from src.config import (
 DATABASE_URL: str = f'postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 REDIS_URL: str = f'redis://{REDIS_HOST}:{REDIS_PORT}'
 RABBITMQ_URL: str = f'amqp://{RABBITMQ_USERNAME}:{RABBITMQ_PASSWORD}@{RABBITMQ_HOST}:{RABBITMQ_PORT}'
-
-Base: DeclarativeMeta = declarative_base()
 
 engine: AsyncEngine = create_async_engine(DATABASE_URL)
 async_session_maker = async_sessionmaker(
